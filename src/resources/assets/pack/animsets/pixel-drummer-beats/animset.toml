@@ -1,0 +1,868 @@
+# Native Nayu graph; only musical performances are replaced.
+[animations]
+kind = "pixel"
+name = "Nayu — автоматические барабаны"
+
+[sprite]
+frame = 64
+scale = 4
+fps = 10
+seat_offset = 0
+
+[overlay]
+frame = 64
+scale = 4
+fps = 10
+offset = [0, -20]
+
+[[clips]]
+name = "idle"
+file = "sprites/idle.png"
+fps = 8
+
+[[clips]]
+name = "fly"
+file = "sprites/idle_fly.png"
+fps = 12
+
+[[clips]]
+name = "walk"
+file = "sprites/walk.png"
+fps = 10
+
+[[clips]]
+name = "greet"
+file = "sprites/greet.png"
+fps = 7
+
+[[clips]]
+name = "sit"
+file = "sprites/idle_sit.png"
+fps = 8
+seat = 52
+
+[[clips]]
+name = "sit2"
+file = "sprites/idle_sit_2.png"
+fps = 8
+seat = 53
+
+[[clips]]
+name = "sit_sad"
+file = "sprites/idle_sit_sad.png"
+fps = 6
+seat = 52
+
+[[clips]]
+name = "sleep"
+file = "sprites/sleep_loop.png"
+fps = 4
+seat = 53
+
+[[clips]]
+name = "sleep_out"
+file = "sprites/sleep_out.png"
+fps = 10
+seat = 53
+
+[[clips]]
+name = "action_in"
+file = "sprites/action_execute_in.png"
+fps = 10
+seat = 52
+
+[[clips]]
+name = "action"
+file = "sprites/action_execute_loop.png"
+fps = 8
+seat = 52
+
+[[clips]]
+name = "action_out"
+file = "sprites/action_execute_out.png"
+fps = 10
+seat = 52
+
+[[clips]]
+name = "dance_slow"
+file = "sprites/drums-native-loop.png"
+fps = 22.6667
+frames = 192
+seat = 52
+
+[[clips]]
+name = "dance_mid"
+file = "sprites/drums-native-loop.png"
+fps = 30.9333
+frames = 192
+seat = 52
+
+[[clips]]
+name = "dance_fast"
+file = "sprites/drums-native-loop.png"
+fps = 40.0
+frames = 192
+seat = 52
+
+[[clips]]
+name = "reminder"
+file = "sprites/reminder.png"
+fps = 8
+
+[[clips]]
+name = "drums_in"
+file = "sprites/drums-native-in.png"
+frames = 32
+fps = 24
+seat = 52
+loop = false
+
+[[clips]]
+name = "drums_out"
+file = "sprites/drums-native-out.png"
+frames = 32
+fps = 24
+seat = 52
+loop = false
+
+[[overlay_clips]]
+name = "weather_sun_in"
+file = "sprites/weather_sun_in.png"
+fps = 12
+
+[[overlay_clips]]
+name = "weather_sun"
+file = "sprites/weather_sun_loop.png"
+fps = 5
+
+[[overlay_clips]]
+name = "weather_sun_out"
+file = "sprites/weather_sun_out.png"
+fps = 12
+
+[[overlay_clips]]
+name = "weather_cloud_in"
+file = "sprites/weather_cloud_in.png"
+fps = 12
+
+[[overlay_clips]]
+name = "weather_cloud"
+file = "sprites/weather_cloud_loop.png"
+fps = 5
+
+[[overlay_clips]]
+name = "weather_cloud_out"
+file = "sprites/weather_cloud_out.png"
+fps = 12
+
+[[overlay_clips]]
+name = "weather_rain_in"
+file = "sprites/weather_rain_in.png"
+fps = 12
+
+[[overlay_clips]]
+name = "weather_rain"
+file = "sprites/weather_rain_loop.png"
+fps = 6
+
+[[overlay_clips]]
+name = "weather_rain_out"
+file = "sprites/weather_rain_out.png"
+fps = 12
+
+[[overlay_clips]]
+name = "weather_storm_in"
+file = "sprites/weather_storm_in.png"
+fps = 12
+
+[[overlay_clips]]
+name = "weather_storm"
+file = "sprites/weather_storm_loop.png"
+fps = 8
+
+[[overlay_clips]]
+name = "weather_storm_out"
+file = "sprites/weather_storm_out.png"
+fps = 12
+
+[states]
+default = "idle"
+
+[states.idle]
+clip = "idle"
+loop = true
+
+[[states.idle.transitions]]
+on = "sit"
+to = "sit"
+
+[[states.idle.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.idle.transitions]]
+on = "idle_timeout"
+to = "sleep"
+
+[[states.idle.transitions]]
+on = "launched"
+to = "greet"
+
+[[states.idle.transitions]]
+on = "action_start"
+to = "action"
+
+[[states.idle.transitions]]
+on = "music_slow"
+to = "dance_slow"
+
+[[states.idle.transitions]]
+on = "music_mid"
+to = "dance_mid"
+
+[[states.idle.transitions]]
+on = "music_fast"
+to = "dance_fast"
+
+[[states.idle.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit]
+pick = "random"
+reroll_secs = [25, 50]
+
+[[states.sit.variants]]
+clip = "sit"
+
+[[states.sit.variants]]
+clip = "sit2"
+
+[[states.sit.variants]]
+clip = "sit_sad"
+moods = ["sad"]
+
+[[states.sit.transitions]]
+on = "unsit"
+to = "idle"
+
+[[states.sit.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+[[states.sit.transitions]]
+on = "action_start"
+to = "sit_action"
+
+[[states.sit.transitions]]
+on = "walk_start"
+to = "sit_walk"
+
+[[states.sit.transitions]]
+on = "walk_left"
+to = "sit_walk"
+
+[[states.sit.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+
+[[states.sit.transitions]]
+on = "walk_right"
+to = "sit_walk"
+
+[[states.sit.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+
+[[states.sit.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+
+[[states.sit.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+
+[[states.sit.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+[states.drag]
+clip = "fly"
+loop = true
+
+[[states.drag.transitions]]
+on = "sit"
+to = "sit"
+
+[[states.drag.transitions]]
+on = "drag_end"
+to = "idle"
+
+[states.greet]
+clip = "greet"
+loop = false
+
+[[states.greet.transitions]]
+on = "clip_finished"
+to = "idle"
+
+[[states.greet.transitions]]
+on = "dragged"
+to = "drag"
+
+[states.sleep]
+clip = "sleep"
+loop = true
+end = "sleep_out"
+
+[[states.sleep.transitions]]
+on = "any_input"
+to = "idle"
+
+[[states.sleep.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sleep.transitions]]
+on = "action_start"
+to = "action"
+
+[[states.sleep.transitions]]
+on = "music_slow"
+to = "dance_slow"
+
+[[states.sleep.transitions]]
+on = "music_mid"
+to = "dance_mid"
+
+[[states.sleep.transitions]]
+on = "music_fast"
+to = "dance_fast"
+
+[states.sit_sleep]
+clip = "sleep"
+loop = true
+end = "sleep_out"
+
+[[states.sit_sleep.transitions]]
+on = "any_input"
+to = "sit"
+
+[[states.sit_sleep.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit_sleep.transitions]]
+on = "action_start"
+to = "sit_action"
+
+[[states.sit_sleep.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+
+[[states.sit_sleep.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+
+[[states.sit_sleep.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+
+[[states.sit_sleep.transitions]]
+on = "walk_left"
+to = "sit_walk"
+
+[[states.sit_sleep.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+
+[[states.sit_sleep.transitions]]
+on = "walk_right"
+to = "sit_walk"
+
+[states.action]
+clip = "action"
+loop = true
+start = "action_in"
+end = "action_out"
+
+[[states.action.transitions]]
+on = "action_end"
+to = "idle"
+
+[[states.action.transitions]]
+on = "idle_timeout"
+to = "sleep"
+
+[[states.action.transitions]]
+on = "dragged"
+to = "drag"
+
+[states.sit_action]
+clip = "action"
+loop = true
+start = "action_in"
+end = "action_out"
+
+[[states.sit_action.transitions]]
+on = "action_end"
+to = "sit"
+
+[[states.sit_action.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+[[states.sit_action.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit_action.transitions]]
+on = "walk_left"
+to = "sit_walk"
+
+[[states.sit_action.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+
+[[states.sit_action.transitions]]
+on = "walk_right"
+to = "sit_walk"
+
+[states.dance_slow]
+clip = "dance_slow"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.dance_slow.transitions]]
+on = "music_mid"
+to = "dance_mid"
+cut = true
+
+[[states.dance_slow.transitions]]
+on = "music_fast"
+to = "dance_fast"
+cut = true
+
+[[states.dance_slow.transitions]]
+on = "music_stop"
+to = "idle"
+
+[[states.dance_slow.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.dance_slow.transitions]]
+on = "action_start"
+to = "action"
+
+[[states.dance_slow.transitions]]
+on = "idle_timeout"
+to = "sleep"
+
+[[states.dance_slow.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit_dance_slow]
+clip = "dance_slow"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.sit_dance_slow.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+cut = true
+
+[[states.sit_dance_slow.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+cut = true
+
+[[states.sit_dance_slow.transitions]]
+on = "music_stop"
+to = "sit"
+
+[[states.sit_dance_slow.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit_dance_slow.transitions]]
+on = "action_start"
+to = "sit_action"
+
+[[states.sit_dance_slow.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+[[states.sit_dance_slow.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+[states.dance_mid]
+clip = "dance_mid"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.dance_mid.transitions]]
+on = "music_slow"
+to = "dance_slow"
+cut = true
+
+[[states.dance_mid.transitions]]
+on = "music_fast"
+to = "dance_fast"
+cut = true
+
+[[states.dance_mid.transitions]]
+on = "music_stop"
+to = "idle"
+
+[[states.dance_mid.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.dance_mid.transitions]]
+on = "action_start"
+to = "action"
+
+[[states.dance_mid.transitions]]
+on = "idle_timeout"
+to = "sleep"
+
+[[states.dance_mid.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit_dance_mid]
+clip = "dance_mid"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.sit_dance_mid.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+cut = true
+
+[[states.sit_dance_mid.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+cut = true
+
+[[states.sit_dance_mid.transitions]]
+on = "music_stop"
+to = "sit"
+
+[[states.sit_dance_mid.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit_dance_mid.transitions]]
+on = "action_start"
+to = "sit_action"
+
+[[states.sit_dance_mid.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+[[states.sit_dance_mid.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+[states.dance_fast]
+clip = "dance_fast"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.dance_fast.transitions]]
+on = "music_slow"
+to = "dance_slow"
+cut = true
+
+[[states.dance_fast.transitions]]
+on = "music_mid"
+to = "dance_mid"
+cut = true
+
+[[states.dance_fast.transitions]]
+on = "music_stop"
+to = "idle"
+
+[[states.dance_fast.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.dance_fast.transitions]]
+on = "action_start"
+to = "action"
+
+[[states.dance_fast.transitions]]
+on = "idle_timeout"
+to = "sleep"
+
+[[states.dance_fast.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit_dance_fast]
+clip = "dance_fast"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.sit_dance_fast.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+cut = true
+
+[[states.sit_dance_fast.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+cut = true
+
+[[states.sit_dance_fast.transitions]]
+on = "music_stop"
+to = "sit"
+
+[[states.sit_dance_fast.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit_dance_fast.transitions]]
+on = "action_start"
+to = "sit_action"
+
+[[states.sit_dance_fast.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+[[states.sit_dance_fast.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+[states.sit_walk]
+clip = "walk"
+loop = true
+
+[[states.sit_walk.transitions]]
+on = "walk_end"
+to = "sit"
+
+[[states.sit_walk.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit_walk.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+[states.reminder]
+clip = "reminder"
+loop = true
+
+[[states.reminder.transitions]]
+on = "reminder_end"
+to = "idle"
+
+[[states.reminder.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.reminder.transitions]]
+on = "action_start"
+to = "action"
+
+[[states.reminder.transitions]]
+on = "idle_timeout"
+to = "sleep"
+
+[states.sit_reminder]
+clip = "reminder"
+loop = true
+
+[[states.sit_reminder.transitions]]
+on = "reminder_end"
+to = "sit"
+
+[[states.sit_reminder.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.sit_reminder.transitions]]
+on = "action_start"
+to = "sit_action"
+
+[[states.sit_reminder.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+[[states.sit_reminder.transitions]]
+on = "walk_left"
+to = "sit_walk"
+
+[[states.sit_reminder.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+
+[[states.sit_reminder.transitions]]
+on = "walk_right"
+to = "sit_walk"
+
+[states.solo_slow]
+clip = "dance_slow"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.solo_slow.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.solo_slow.transitions]]
+on = "drag_end"
+to = "idle"
+
+[states.solo_mid]
+clip = "dance_mid"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.solo_mid.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.solo_mid.transitions]]
+on = "drag_end"
+to = "idle"
+
+[states.solo_fast]
+clip = "dance_fast"
+loop = true
+start = "drums_in"
+end = "drums_out"
+
+[[states.solo_fast.transitions]]
+on = "dragged"
+to = "drag"
+
+[[states.solo_fast.transitions]]
+on = "drag_end"
+to = "idle"
+
+[overlays]
+default = "none"
+
+[overlays.none]
+
+[[overlays.none.transitions]]
+on = "weather_sun"
+to = "sun"
+
+[[overlays.none.transitions]]
+on = "weather_cloud"
+to = "cloud"
+
+[[overlays.none.transitions]]
+on = "weather_rain"
+to = "rain"
+
+[[overlays.none.transitions]]
+on = "weather_storm"
+to = "storm"
+
+[overlays.sun]
+clip = "weather_sun"
+loop = true
+start = "weather_sun_in"
+end = "weather_sun_out"
+
+[[overlays.sun.transitions]]
+on = "weather_clear"
+to = "none"
+
+[[overlays.sun.transitions]]
+on = "weather_cloud"
+to = "cloud"
+
+[[overlays.sun.transitions]]
+on = "weather_rain"
+to = "rain"
+
+[[overlays.sun.transitions]]
+on = "weather_storm"
+to = "storm"
+
+[overlays.cloud]
+clip = "weather_cloud"
+loop = true
+start = "weather_cloud_in"
+end = "weather_cloud_out"
+
+[[overlays.cloud.transitions]]
+on = "weather_clear"
+to = "none"
+
+[[overlays.cloud.transitions]]
+on = "weather_sun"
+to = "sun"
+
+[[overlays.cloud.transitions]]
+on = "weather_rain"
+to = "rain"
+
+[[overlays.cloud.transitions]]
+on = "weather_storm"
+to = "storm"
+
+[overlays.rain]
+clip = "weather_rain"
+loop = true
+start = "weather_rain_in"
+end = "weather_rain_out"
+
+[[overlays.rain.transitions]]
+on = "weather_clear"
+to = "none"
+
+[[overlays.rain.transitions]]
+on = "weather_sun"
+to = "sun"
+
+[[overlays.rain.transitions]]
+on = "weather_cloud"
+to = "cloud"
+
+[[overlays.rain.transitions]]
+on = "weather_storm"
+to = "storm"
+
+[overlays.storm]
+clip = "weather_storm"
+loop = true
+start = "weather_storm_in"
+end = "weather_storm_out"
+
+[[overlays.storm.transitions]]
+on = "weather_clear"
+to = "none"
+
+[[overlays.storm.transitions]]
+on = "weather_sun"
+to = "sun"
+
+[[overlays.storm.transitions]]
+on = "weather_cloud"
+to = "cloud"
+
+[[overlays.storm.transitions]]
+on = "weather_rain"
+to = "rain"

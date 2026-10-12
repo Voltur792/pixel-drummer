@@ -1,0 +1,13 @@
+{
+  "frame_size": 64,
+  "native_scale": 4,
+  "frames": 192,
+  "transition_frames": 32,
+  "head_motion": "integer pixel copy",
+  "instruments": [
+    "drums",
+    "guitar",
+    "microphone",
+    "keyboard"
+  ]
+}

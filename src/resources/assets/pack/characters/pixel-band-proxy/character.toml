@@ -1,0 +1,5 @@
+[character]
+kind="pixel"
+name="Nayu — музыкальная сцена"
+model="builtin:nayu-2d"
+animations="pixel-band-proxy"

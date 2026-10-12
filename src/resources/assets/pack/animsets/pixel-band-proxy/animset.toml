@@ -1,0 +1,1116 @@
+[animations]
+kind = "pixel"
+name = "Nayu stage proxy"
+
+[sprite]
+frame       = 64
+scale       = 4
+fps         = 10
+seat_offset = 0
+
+# Standing / floating poses: the feet ARE the lowest pixels, so the fallback seat is right.
+[[clips]]
+name = "idle"
+file = "sprites/idle.png"
+fps  = 8
+[[clips]]
+name = "fly"
+file = "sprites/idle_fly.png"
+fps  = 12
+[[clips]]
+name = "walk"
+file = "sprites/walk.png"
+fps  = 10
+# Measured, not assumed: every one of greet's 13 cells ends at source row 51, the same row
+# `idle.png` and `walk.png` end at — so the derived seat is already 52 and authoring one would only
+# be a chance to get it wrong. (`sleep_loop.png` ends at 55, which is why the sleeping rows below
+# DO carry a `seat`.)
+#
+# `fps = 7` is a LIVE correction, not a guess: 10 shipped first and the user's word for it was
+# "слишком интенсивно". Thirteen cells at seven is ~1.9 s, which is a wave rather than a flap, and
+# it makes the greeting the slowest waking clip in the set — deliberately, since it is the one
+# clip whose whole job is to be looked at.
+[[clips]]
+name = "greet"
+file = "sprites/greet.png"
+fps  = 7
+
+# Sitting poses: she rests on the edge at the PELVIS, legs hanging over it — `seat` sits ABOVE
+# the art's lowest pixel (tuned live; the bottom edge would be 55/56/55).
+[[clips]]
+name = "sit"
+file = "sprites/idle_sit.png"
+fps  = 8
+seat = 52
+[[clips]]
+name = "sit2"
+file = "sprites/idle_sit_2.png"
+fps  = 8
+seat = 53
+[[clips]]
+name = "sit_sad"
+file = "sprites/idle_sit_sad.png"
+fps  = 6
+seat = 52
+
+# Sleeping. TWO sheets and not three: there is no `sleep_in` art, so she has no intro and simply
+# takes up the pose — which the schema allows (`end` without `start`). `sleep_out` is the wake-up,
+# and it is a BRACKET rather than an ordinary state: `[states.sleep].end` forces it one-shot
+# whatever this row's `loop` says, and the row is never rewritten (`[[clips]].loop` defaults to
+# true and the same row could be another state's loop clip).
+#
+# `seat = 53` on BOTH, and the line above it used to say the opposite — that a lying pose needs no
+# seat because "her lowest pixels really are what she rests on". A live check on the perched pet
+# falsified that: the fallback seat is the row below the lowest OPAQUE pixel (56 here, for both
+# sheets), and resting a lying body on its very lowest pixel leaves her floating above the edge.
+# Three source px higher in the cell puts her ON it. Same shape as the sit rows above, and for a
+# related reason — where a pose CONTACTS a surface is a property of the pose, not of its bounding
+# box, and only the standing poses get that for free.
+[[clips]]
+name = "sleep"
+file = "sprites/sleep_loop.png"
+fps  = 4
+seat = 53
+[[clips]]
+name = "sleep_out"
+file = "sprites/sleep_out.png"
+fps  = 10
+seat = 53
+
+# WORKING — the only three-part performance in the set: she sits down to it, works, gets up.
+#
+# `seat = 52`, the SITTING value, and it is measured rather than inherited. All seventeen cells end
+# at source row 54, so the derived seat would be 55 — but the bottom three rows are two thin
+# dangling legs, and cell 0 of `action_execute_in.png` is pixel-for-pixel the silhouette of
+# `idle_sit.png` cell 0. The pose IS the sitting pose, contact at the pelvis, and 52 is the number
+# `sit` already uses. What that buys on screen: a perched pet entering `sit_action` from `sit` does
+# not move the window by even one pixel, because the seat line the window-sit behaviour aligns on
+# is identical.
+#
+# The tempo is a first guess and the one set of numbers here most likely to want the user's eye:
+# 10 fps for the two brackets (0.6 s down, 0.4 s up) and 8 for the loop (7 cells, ~0.9 s a cycle).
+# The brackets are deliberately quicker than the loop — an entrance that dawdles reads as part of
+# the work rather than as a move into it.
+[[clips]]
+name = "action_in"
+file = "sprites/action_execute_in.png"
+fps  = 10
+seat = 52
+[[clips]]
+name = "action"
+file = "sprites/action_execute_loop.png"
+fps  = 8
+seat = 52
+[[clips]]
+name = "action_out"
+file = "sprites/action_execute_out.png"
+fps  = 10
+seat = 52
+
+# DANCING — one sheet, three rows, and the only difference between the rows is the TEMPO.
+#
+# `dance.png` is six cells of one sway cycle (three leaning one way, three the other), so a cycle
+# is two beats and the fps that lands it ON the beat is `frames x BPM / (60 x beats)` = BPM/20.
+# The three numbers below are that formula at the CENTRES of Astra's default bands — 85 / 116 /
+# 150 BPM. A first guess in the same way `greet`'s 7 was: play a real track and move them.
+#
+# No `seat`: measured, every cell ends at source row 51, so the DERIVED seat is 52 — `idle`'s
+# value, and the one `sit` and `sit_sad` author. (`sit2` authors 53, so a perched dance entered
+# from THAT variant steps one source px. The `action` states pay the same px for the same
+# reason, and it is why this says `sit`'s value rather than the sitting family's.)
+[[clips]]
+name = "dance_slow"
+file = "sprites/dance.png"
+fps  = 4.25
+[[clips]]
+name = "dance_mid"
+file = "sprites/dance.png"
+fps  = 5.8
+[[clips]]
+name = "dance_fast"
+file = "sprites/dance.png"
+fps  = 7.5
+
+# THE REMINDER — one sheet, twenty-one cells, and ONE CYCLE rather than a performance.
+#
+# No `seat`: measured, the lowest opaque row anywhere in the sheet is 51, so the DERIVED seat is
+# 52 — the value `idle` derives and `sit` / `sit_sad` author, which is what lets `sit_reminder`
+# enter and leave a perch without moving the window. (From `sit2`, which authors 53, it steps one
+# source px — the price the dance and the working states already pay, for the same reason.) Row 0
+# lifts her to 46 twice; that is the bob, and it is meant to show.
+#
+# No `start` / `end` either, and that is a READING of the art rather than a fact about it: cells
+# 0-3 repeat verbatim as 4-7 (two hops), 8 and 9 are the same cell, 13/15/17 and 14/16/18 are a
+# two-cell flicker played three times, and cell 20 IS cell 8 — so 8-19 is a cycle that closes on
+# itself. Played whole, the wrap from 20 back to 0 is a silhouette step of 81 px, inside the range
+# of the sheet's own frame-to-frame steps (49-284), so the 21 cells loop as one; but "two hops, then
+# a loop" is the other honest reading, and cutting 0-7 into a one-shot `start` would make the hop an
+# entrance. That is a call for a screen, not for a mask diff. (Pairwise mask differences over the
+# decoded sheet, 2026-09-23.)
+#
+# `fps = 8` is `idle`'s clock, and the owner's choice (2026-09-24) over the first guess of 10: at 8
+# the twenty-one cells land a cycle at ~2.6 s, the doubled bob at 2 Hz and the flicker at 4 Hz — a
+# blink rather than a strobe, for a clip that may hold for minutes. 10 was seen live and read as
+# lively; 8 is the calmer of the two, and the one a pet showing a reminder for a long time wants.
+[[clips]]
+name = "reminder"
+file = "sprites/reminder.png"
+fps  = 8
+
+[[clips]]
+name="stage_blank_a"
+file="sprites/blank-a.png"
+frames=144
+seat=52
+fps=24
+
+[[clips]]
+name="stage_blank_b"
+file="sprites/blank-b.png"
+frames=144
+seat=52
+fps=24
+
+[states]
+default = "idle"
+
+[states.idle]
+clip = "idle"
+loop = true
+[[states.idle.transitions]]
+on = "sit"
+to = "sit"
+[[states.idle.transitions]]
+on = "dragged"
+to = "drag"
+[[states.idle.transitions]]
+on = "idle_timeout"
+to = "sleep"
+# The ONE edge the engine's launch raises, and the pack's own on/off switch for the greeting:
+# delete this row and she simply starts idling. See `[states.greet]`.
+[[states.idle.transitions]]
+on = "launched"
+to = "greet"
+# Astra started working. The twin of this row on `[states.sit]` is what keeps a perched pet
+# perched — see `[states.action]`.
+[[states.idle.transitions]]
+on = "action_start"
+to = "action"
+# MUSIC. Three bands, three states; a standing pet takes the standing family. See
+# `[states.dance_mid]` for the whole axis.
+[[states.idle.transitions]]
+on = "music_slow"
+to = "dance_slow"
+[[states.idle.transitions]]
+on = "music_mid"
+to = "dance_mid"
+[[states.idle.transitions]]
+on = "music_fast"
+to = "dance_fast"
+# A REMINDER is standing and nobody has answered it. The twin of this row on `[states.sit]` is
+# what keeps a perched pet perched — see `[states.reminder]` for the whole axis.
+[[states.idle.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit]
+pick = "random"
+reroll_secs = [25, 50]
+variants = [
+  { clip = "sit" },
+  { clip = "sit2" },
+  { clip = "sit_sad", moods = ["sad"] },
+]
+[[states.sit.transitions]]
+on = "unsit"
+to = "idle"
+[[states.sit.transitions]]
+on = "dragged"
+to = "drag"
+[[states.sit.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+[[states.sit.transitions]]
+on = "action_start"
+to = "sit_action"
+# SHE GETS UP AND WALKS. The engine's stroll behaviour raises `walk_start` on a perched pet every
+# couple of minutes; THIS ROW is the whole of what makes it mean anything, and deleting it is the
+# pack's own off switch, exactly as deleting `[states.idle]`'s `launched` row turns off the
+# greeting. It is the only row in the file that answers this token — so a pet who is asleep, at
+# work, dancing or in your hand ignores it, which is where all of those refusals live.
+[[states.sit.transitions]]
+on = "walk_start"
+to = "sit_walk"
+# …and the same request with a SIDE attached, which is how Astra says "move to the left of that
+# window". All three are `Raiser::Daemon` and all three land in the same state: the token tells the
+# GRAPH to start walking and tells the BEHAVIOUR which third of the perch to aim at, because no
+# `[states]` table can express a position. Standalone they never arrive.
+#
+# **`[states.sit_walk]` deliberately answers none of them.** Re-aiming while she is already walking
+# needs no state change — the behaviour just re-draws its destination — and an edge there would
+# restart the sheet from cell 0 every time Astra spoke.
+[[states.sit.transitions]]
+on = "walk_left"
+to = "sit_walk"
+[[states.sit.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+[[states.sit.transitions]]
+on = "walk_right"
+to = "sit_walk"
+# The perched family, and the twin of the three rows on `[states.idle]` — she dances where she
+# is rather than standing up to do it, the same thing `sit_action` says about work.
+[[states.sit.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+[[states.sit.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+[[states.sit.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+# The perched twin of `[states.idle]`'s reminder row: she shows it where she is.
+[[states.sit.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+[states.drag]
+clip = "fly"
+loop = true
+[[states.drag.transitions]]
+on = "sit"
+to = "sit"
+[[states.drag.transitions]]
+on = "drag_end"
+to = "idle"
+
+# The GREETING — she waves hello once, when the engine starts, and never again on her own.
+#
+# The producer is `app::boot`, which pushes `launched` exactly once per PROCESS: not per controller,
+# so a character switch, a `[states]` hot-edit or a pack reload does not make her greet the room
+# again. A pack turns the greeting off by deleting `[states.idle]`'s `launched` row — there is no
+# engine knob, because the data already is one.
+#
+# `loop = false` + `on = "clip_finished"` is the whole one-shot, and it is an ORDINARY state rather
+# than a bracket: `start`/`end` hang off a state you are entering or leaving, and this is neither —
+# she is entering `idle`, through a detour that happens once.
+#
+# The `[[clips]]` row above keeps `loop`'s default of TRUE, and that is not an oversight: the row
+# describes the SHEET, the state describes the playback, and the ladder is variant > state > clip.
+# It does mean `library.json` publishes `"loops": true` for a clip that plays once — the same thing
+# it already says about `sleep_out` — so read the STATE, not the row, for what reaches the screen.
+#
+# **Why this is not `start = "greet"` on `[states.idle]`**, which is the shorter thing to write: an
+# intro plays on EVERY entry into its state, and `idle` is where she lands after a drag, after
+# standing up off a window edge, and after waking from a nap. She would wave hello each time.
+#
+# **Why `[states].default` is still `idle` and not `greet`**, which is the other shorter thing: that
+# key is read TWICE. It is the launch state, and it is also where `rest::free_target` sends a pet
+# who is neither held nor perched and whose pack authored no way out of `drag` — so a greeting in
+# that slot would replay every time such a pet was put down. One key, two readings; only `idle`
+# satisfies both.
+#
+# `dragged` is not optional here. The pose invariant declines to overrule a state it does not own
+# (`greet` is neither pose nor the launch state), so without this row a pet picked up mid-wave would
+# go on waving in your hand. With it she is cut out of the clip instantly — `Trigger::Dragged` is
+# `Urgency::Cut` whatever a row says. `sit` is deliberately absent for the same reason it is absent
+# from the sleeping states: rung 1 of the invariant would take it the moment she launched over a
+# window edge, and the greeting would never be seen.
+[states.greet]
+clip = "greet"
+loop = false
+[[states.greet.transitions]]
+on = "clip_finished"
+to = "idle"
+[[states.greet.transitions]]
+on = "dragged"
+to = "drag"
+
+# ONE POSE, TWO STATES, and the second one is not redundant — see `[states.sit_sleep]` below.
+#
+# Sleep: entered from `idle` when the engine's inactivity clock raises `idle_timeout`
+# (`app::activity`; the window is `settings.json`'s `[sleep]`, an hour by default). She leaves it
+# two ways and they are deliberately different:
+#
+#   `any_input` — the first click on her, or anything Astra sends — is GRACEFUL, so `sleep_out`
+#   plays in full before she moves.
+#
+#   `dragged` — she is in your hand NOW — is a CUT, and `cut = true` is not written because it
+#   would change nothing: that token is immediate whatever a row says (`anim::Trigger::urgency`).
+#
+# **Do not author `on = "sit"` on either sleeping state.** The pose invariant would take that edge
+# the same frame she dozes off on a window edge, and she could never sleep while perched. Sleeping
+# is not one of the engine's two POSES, which is exactly why the invariant otherwise leaves both of
+# these states alone.
+[states.sleep]
+clip = "sleep"
+loop = true
+end  = "sleep_out"
+[[states.sleep.transitions]]
+on = "any_input"
+to = "idle"
+[[states.sleep.transitions]]
+on = "dragged"
+to = "drag"
+# **She wakes straight INTO the work, rather than into `idle` and then into it.** Astra sending
+# anything already rouses her (`app::daemon::rouses`), so `any_input` and `action_start` arrive in
+# the SAME batch, in that order, and the fold applies every trigger in order against the state she
+# is still in — `sleep`, because the graceful exit is deferred behind `sleep_out`. The second edge
+# therefore RE-POINTS the pending exit (`leave_variant`, "already leaving → re-point only") instead
+# of being dropped. Without this row the token would be evaluated against `sleep`, find nothing,
+# and Astra's work would go unmarked for exactly the pet who had been idle long enough to notice.
+[[states.sleep.transitions]]
+on = "action_start"
+to = "action"
+# **Music wakes her, straight into the dance.** A heartbeat rouses the inactivity clock, so
+# `any_input` and the band arrive in the SAME batch and in that order: the first starts the
+# graceful exit behind `sleep_out`, the second RE-POINTS it (`leave_variant`, "already leaving →
+# re-point only"). Without these rows the band would be evaluated against `sleep`, match nothing,
+# and she would stand in `idle` until the next heartbeat — the identical mechanism, and the
+# identical reason, as the `action_start` row above.
+[[states.sleep.transitions]]
+on = "music_slow"
+to = "dance_slow"
+[[states.sleep.transitions]]
+on = "music_mid"
+to = "dance_mid"
+[[states.sleep.transitions]]
+on = "music_fast"
+to = "dance_fast"
+# **A reminder wakes her too — and deliberately does NOT re-point the wake-up**, the one place this
+# state breaks the pattern of the rows above. A cue rouses the clock, so she leaves through
+# `sleep_out` either way; the question is only where that exit points. Pointed at a reminder it
+# would have two ways to go wrong that `action_start` and a band do not have: a `reminder_end`
+# landing inside the 1.6 s outro is folded against `sleep`, finds nothing, and leaves her showing a
+# reminder nobody has open; and a heartbeat landing there RE-POINTS an exit that `action_start` had
+# just aimed at the work, losing a turn's only token. So she wakes to `idle`, and the daemon's FIRST
+# re-statement comes early (`companion::reminder`, three seconds) precisely to find her there.
+# Nothing is lost but those seconds — the token is a level. (Found by the adversarial review of the
+# commit that first authored the row.)
+
+# The SITTING twin, on the same two sheets, and the ONLY difference is where she wakes UP.
+#
+# It exists because of a defect the single-state version shipped with, which is worth stating
+# because the reasoning that produced it was almost right. A pet who dozes off on a window edge is
+# in a state the pose invariant must NOT overrule (correct — otherwise she could not sleep there),
+# so waking her went to `idle` and the invariant was left to put her back into `sit` afterwards.
+# It does, and the original note here claimed that costs "one rendered frame". It does not: the
+# invariant runs in `App::frame` step 1, the wake lands inside `render()` in step 2, so the `idle`
+# frame is DRAWN — and it is drawn at the paced interval (up to `pace::MAX_WAIT`, 180 ms), with a
+# window jump either side of it because `idle` and `sleep` have different seat lines. The user's
+# word for it was "мерцание".
+#
+# The fix is this state, and it is DATA: the graph is guard-less, so "wake to where she was" is a
+# second edge, not a condition on the first. Two states, one set of art.
+#
+# The engine-side alternative — have the deferred exit consult the pose when it LANDS — was
+# written out and rejected: the only place that could live is `Renderer::tick_controller`, after
+# the trigger batch has been drained, and `reconcile_pose_state`'s rung 1 stands down for exactly
+# one frame precisely BECAUSE the queue still holds the token. Calling it there would see an empty
+# queue and force `drag_end` as a CUT, re-opening `afad5d7` — a shipped pack's drag outro would
+# stop playing to fix a sleeping pet's wake-up.
+[states.sit_sleep]
+clip = "sleep"
+loop = true
+end  = "sleep_out"
+[[states.sit_sleep.transitions]]
+on = "any_input"
+to = "sit"
+[[states.sit_sleep.transitions]]
+on = "dragged"
+to = "drag"
+# The perched twin of `[states.sleep]`'s row above, and it preserves the pose for the same reason
+# `any_input` does: she was sitting, so she works sitting.
+[[states.sit_sleep.transitions]]
+on = "action_start"
+to = "sit_action"
+# The perched twin of the three rows above: she was sitting, so she dances sitting.
+[[states.sit_sleep.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+[[states.sit_sleep.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+[[states.sit_sleep.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+# …and she wakes straight INTO the walk, for the reason the `action_start` row above it gives.
+#
+# Astra sending anything rouses the inactivity clock (`app::daemon::rouses`), so `any_input` and
+# the side arrive in the SAME batch, in that order. `end = "sleep_out"` makes the first a DEFERRED
+# exit — `current` is still `sit_sleep` while the outro plays — so the second is folded against
+# `sit_sleep` and, without these rows, finds nothing. They RE-POINT the pending exit rather than
+# starting a second one, which is what `leave_variant`'s "already leaving → re-point only" is for.
+#
+# `walk_start` stays absent here too: a sleeping pet should not be woken by the engine's own habit.
+# And no `on = "sit"` — that prohibition is about the POSE INVARIANT taking the edge the frame she
+# dozes off on a perch, and nothing here goes near it.
+[[states.sit_sleep.transitions]]
+on = "walk_left"
+to = "sit_walk"
+[[states.sit_sleep.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+[[states.sit_sleep.transitions]]
+on = "walk_right"
+to = "sit_walk"
+# (No `reminder_start` here either, for `[states.sleep]`'s last paragraph: she wakes to `sit`, and
+# the daemon's early re-statement finds her there.)
+
+# ASTRA IS WORKING — the span from her first tool call to the end of the answer she is writing.
+#
+# The first state in this set whose producer is in ANOTHER REPO. `action_start` and `action_end`
+# are `triggers::Raiser::Daemon`: nothing in this engine can see a turn begin, and that is the
+# architecture rule rather than a gap — the brain is Astra's, the pet is this repo's. Standalone,
+# with no daemon attached, these two states are simply unreachable and she idles, which is the
+# standalone contract and not a defect to warn about.
+#
+# **The only three-part performance in the set**, and it earns all three parts: `start` is her
+# sitting down to it, the loop is the work, `end` is her getting up. That is what `start`/`end` are
+# FOR — a bracket hangs off the state you are entering and leaving — and it is the opposite of the
+# greeting, which is a detour played once and therefore an ordinary one-shot state.
+#
+# TWO STATES on one set of art, for exactly the reason `sit_sleep` exists and in the same shape:
+# the graph is guard-less, so "go back to where she was" is a second edge and not a condition on
+# the first. A single state exiting to `idle` would land a PERCHED pet in `idle` for one paced
+# frame before the pose invariant seated her again — up to 180 ms with a window jump either side
+# of it, which is the "мерцание" the sleeping pair was split to fix. The seat line makes the
+# perched half exact: `action`'s 52 is `sit`'s 52, so entering and leaving move the window by
+# nothing.
+#
+# **What it costs on the floor**: a pet who is STANDING pops into the sitting pose on the first
+# frame of `action_in`, because the art has no stand-to-sit bridge and `action_execute_in.png`
+# cell 0 already IS the sit pose. It reads as her plopping down. Booked in `TODO.md`; the fix is
+# art, not code, and the wrong fix would be to route a standing pet through `sit` first — `sit`
+# means PERCHED here, the pose invariant owns that word, and data may not borrow it.
+#
+# **No `action_start` edge on either of these two**, deliberately: a second tool call in the same
+# turn re-raises the token, and the absence of the edge is what makes that a no-op instead of a
+# restart of the intro. Idempotence by omission, which is the only kind a guard-less graph has.
+#
+# **`idle_timeout` is the dead-man's handle.** If `action_end` never arrives — Astra crashed, the
+# turn was abandoned, the link dropped mid-answer — nothing else in this graph can free her, and a
+# pet stuck in a work loop for ever is worse than one who dozes off. An hour of silence from a
+# daemon that claimed to be working is not a working daemon. (During real work it cannot fire:
+# every command Astra sends rouses the clock.)
+#
+# `dragged` is mandatory here for the same reason it is on `[states.greet]` — the pose invariant
+# declines to overrule a state it does not own, so without it a pet picked up mid-task would keep
+# working in your hand. And `on = "sit"` is deliberately ABSENT from both, like the sleeping pair:
+# rung 1 of the invariant would take it the frame she was set down on a window edge.
+[states.action]
+clip  = "action"
+loop  = true
+start = "action_in"
+end   = "action_out"
+[[states.action.transitions]]
+on = "action_end"
+to = "idle"
+[[states.action.transitions]]
+on = "idle_timeout"
+to = "sleep"
+[[states.action.transitions]]
+on = "dragged"
+to = "drag"
+
+# The perched twin. One difference and it is the whole point of the state: `action_end` lands in
+# `sit`, not `idle`.
+[states.sit_action]
+clip  = "action"
+loop  = true
+start = "action_in"
+end   = "action_out"
+[[states.sit_action.transitions]]
+on = "action_end"
+to = "sit"
+[[states.sit_action.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+[[states.sit_action.transitions]]
+on = "dragged"
+to = "drag"
+# …AND THE THREE SIDES, which is not the same decision as the omission above it.
+#
+# `walk_start` is deliberately absent here — that is the engine's own dwell asking on its own
+# clock, and a pet who wanders off mid-task is a bug. The three SIDES are `Raiser::Daemon`: they
+# exist only because a person said "пересядь влево" out loud. And the daemon raises `action_start`
+# at a turn's FIRST TOOL CALL, while `move_companion` IS a tool call — so her working pose is
+# entered one moment before her own instruction arrives, every single time. Without these rows the
+# feature does not merely misfire: an AI-asked move can NEVER work.
+#
+# The file already reasons this way once, on `[states.sleep]`'s `action_start` row: *"the fold
+# applies every trigger in order against the state she is still in … without this row the token
+# would be evaluated against `sleep`, find nothing, and Astra's work would go unmarked"*. Same
+# mechanism, same repo, one axis over.
+#
+# What it costs, stated rather than argued away: `[states.sit_walk]` answers no `action_end`, so
+# the turn's closing bracket becomes a no-op and she lands in `sit` by her own `walk_end`. On a turn
+# with more tool calls after the move she therefore stops LOOKING busy while Astra still is —
+# `action_start` is raised once per turn and never again. Booked in `TODO.md`.
+[[states.sit_action.transitions]]
+on = "walk_left"
+to = "sit_walk"
+[[states.sit_action.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+[[states.sit_action.transitions]]
+on = "walk_right"
+to = "sit_walk"
+
+# SHE DANCES — Astra hears what is playing on the machine and tells her the TEMPO BAND.
+#
+# The second axis whose producer is in the OTHER repo, and the first that is a LEVEL rather than
+# an edge: `music_slow` / `music_mid` / `music_fast` mean *this is what is playing now* and are
+# RE-STATED on a heartbeat; `music_stop` means it went away. `triggers.rs` carries the reasoning,
+# including why the wire says a band and not a BPM. Standalone they never arrive and these six
+# states are unreachable — the standalone contract, not a defect.
+#
+# SIX STATES ON ONE SHEET, and they are two families of three. The three BANDS differ only in the
+# clip they name, because that is where the tempo lives (see the `dance_*` `[[clips]]` rows). The
+# two FAMILIES are the `sit_action` / `sit_sleep` pattern for the third time: the graph is
+# guard-less, so "go back to where she was" is a second state and not a condition on an edge — a
+# perched pet returned through `idle` would be re-seated by the pose invariant a DRAWN frame
+# later, with a window jump either side of it.
+#
+# **No state answers its OWN band.** The level is re-stated every few seconds, so an edge on its
+# own token would restart the sheet on every heartbeat; the absence is what makes a re-statement
+# a no-op. Same idempotence-by-omission as `[states.action]`.
+#
+# **No `on = "sit"`**, for the sleeping pair's reason: rung 1 of the pose invariant would take it
+# the frame she was set down on a window edge, and she could never dance while perched.
+#
+# `dragged` is mandatory — the invariant declines to overrule a state it does not own, so without
+# it a pet picked up mid-dance would keep dancing in your hand. `action_start` is here because
+# **work beats dancing**, and the reverse is said by OMISSION: neither `[states.action]` nor
+# `[states.sit_action]` answers a band, so a working pet ignores the music until she is done.
+# The sleeping pair does the opposite and answers all three — a nap that ignores a room that has
+# just filled with music is worse than one that ends.
+#
+# `idle_timeout` is the dead-man's handle. During real music it cannot fire (every heartbeat
+# rouses the clock, `app::daemon::rouses`); if Astra dies mid-track, it is the only thing that
+# frees a pet left dancing to a record nobody is playing.
+#
+# `reminder_start` is here because **a reminder outranks the record**, and the reverse is said by
+# OMISSION: neither reminder state answers a band. Nothing is lost by that — the band is a LEVEL
+# Astra re-states, so the first heartbeat after `reminder_end` lands in `idle` or `sit` and takes
+# that state's own band edge straight back into the dance, in the right family.
+
+[states.dance_slow]
+clip = "dance_slow"
+loop = true
+[[states.dance_slow.transitions]]
+on = "music_mid"
+to = "dance_mid"
+[[states.dance_slow.transitions]]
+on = "music_fast"
+to = "dance_fast"
+[[states.dance_slow.transitions]]
+on = "music_stop"
+to = "idle"
+[[states.dance_slow.transitions]]
+on = "dragged"
+to = "drag"
+[[states.dance_slow.transitions]]
+on = "action_start"
+to = "action"
+[[states.dance_slow.transitions]]
+on = "idle_timeout"
+to = "sleep"
+[[states.dance_slow.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit_dance_slow]
+clip = "dance_slow"
+loop = true
+[[states.sit_dance_slow.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+[[states.sit_dance_slow.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+[[states.sit_dance_slow.transitions]]
+on = "music_stop"
+to = "sit"
+[[states.sit_dance_slow.transitions]]
+on = "dragged"
+to = "drag"
+[[states.sit_dance_slow.transitions]]
+on = "action_start"
+to = "sit_action"
+[[states.sit_dance_slow.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+[[states.sit_dance_slow.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+[states.dance_mid]
+clip = "dance_mid"
+loop = true
+[[states.dance_mid.transitions]]
+on = "music_slow"
+to = "dance_slow"
+[[states.dance_mid.transitions]]
+on = "music_fast"
+to = "dance_fast"
+[[states.dance_mid.transitions]]
+on = "music_stop"
+to = "idle"
+[[states.dance_mid.transitions]]
+on = "dragged"
+to = "drag"
+[[states.dance_mid.transitions]]
+on = "action_start"
+to = "action"
+[[states.dance_mid.transitions]]
+on = "idle_timeout"
+to = "sleep"
+[[states.dance_mid.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit_dance_mid]
+clip = "dance_mid"
+loop = true
+[[states.sit_dance_mid.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+[[states.sit_dance_mid.transitions]]
+on = "music_fast"
+to = "sit_dance_fast"
+[[states.sit_dance_mid.transitions]]
+on = "music_stop"
+to = "sit"
+[[states.sit_dance_mid.transitions]]
+on = "dragged"
+to = "drag"
+[[states.sit_dance_mid.transitions]]
+on = "action_start"
+to = "sit_action"
+[[states.sit_dance_mid.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+[[states.sit_dance_mid.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+[states.dance_fast]
+clip = "dance_fast"
+loop = true
+[[states.dance_fast.transitions]]
+on = "music_slow"
+to = "dance_slow"
+[[states.dance_fast.transitions]]
+on = "music_mid"
+to = "dance_mid"
+[[states.dance_fast.transitions]]
+on = "music_stop"
+to = "idle"
+[[states.dance_fast.transitions]]
+on = "dragged"
+to = "drag"
+[[states.dance_fast.transitions]]
+on = "action_start"
+to = "action"
+[[states.dance_fast.transitions]]
+on = "idle_timeout"
+to = "sleep"
+[[states.dance_fast.transitions]]
+on = "reminder_start"
+to = "reminder"
+
+[states.sit_dance_fast]
+clip = "dance_fast"
+loop = true
+[[states.sit_dance_fast.transitions]]
+on = "music_slow"
+to = "sit_dance_slow"
+[[states.sit_dance_fast.transitions]]
+on = "music_mid"
+to = "sit_dance_mid"
+[[states.sit_dance_fast.transitions]]
+on = "music_stop"
+to = "sit"
+[[states.sit_dance_fast.transitions]]
+on = "dragged"
+to = "drag"
+[[states.sit_dance_fast.transitions]]
+on = "action_start"
+to = "sit_action"
+[[states.sit_dance_fast.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+[[states.sit_dance_fast.transitions]]
+on = "reminder_start"
+to = "sit_reminder"
+
+# SHE WALKS ALONG THE EDGE — the first use `walk.png` has ever had.
+#
+# The sheet has shipped and been declared since the pixel avatar landed, and nothing played it:
+# `TODO.md` carried it as "walk.png has no trigger" with the recommendation this state implements.
+# No `[[clips]]` row was added for it; it was already here.
+#
+# **No standing twin.** `sleep`/`action`/`dance` each have one because she can be doing those
+# either on the floor or on a window edge, and the graph is guard-less so "go back to where she
+# was" has to be a second state. Walking has nowhere else to happen: she walks ALONG a perch, and
+# off one there is no line to follow. One state, and it is a perched one.
+#
+# The seat makes the entrance free: `walk.png`'s cells all end at source row 51, so its derived
+# seat is 52 — the value `sit` and `sit_sad` author — and entering or leaving this state moves the
+# window by exactly nothing. Same measurement, same reason, as `[states.sit_action]`'s `seat = 52`.
+#
+# **The engine does not drive this state; it FOLLOWS it.** `walk_start` only asks. The stroll
+# behaviour starts moving her along the perch once it observes her actually here, and stops the
+# moment she is not — which is also why every one of the edges below is safe: whatever pulls her
+# out, the walk ends with her.
+#
+# Three omissions, each with a reason:
+#
+#   no `on = "sit"` — rung 1 of the pose invariant would take that edge the instant it noticed a
+#   perched pet in a non-sitting state, i.e. on the first frame. The same rule the sleeping pair,
+#   the working pair and the six dance states all obey.
+#
+#   no `on = "unsit"` — that token has no producer but the invariant itself, so the row would be
+#   dead data. Losing the perch mid-walk is handled the other way round: the behaviour hands back
+#   `walk_end`, which lands her in `sit`, and the invariant does the `unsit` from there.
+#
+#   no `on = "walk_start"` — a second ask must be a no-op, not a restarted walk. Idempotence by
+#   omission, as with `action_start` on the working states and a band on its own dance.
+#
+# `dragged` is mandatory and the reason is not obvious: `Trigger::Dragged` is deliberately NOT
+# raised when the grab lands on an already-perched pet (`app::input`), because sliding her along an
+# edge is not picking her up. What puts her into `drag` is the pose invariant, and it does that
+# through rung 1 — this row.
+#
+# **NOTHING ELSE INTERRUPTS A WALK, and that is the fourth omission — the one that cost a live
+# test.** Every other perched state (`sit_sleep`, `sit_action`, the three `sit_dance_*`) answers
+# `action_start` and the three music bands, and this state was written from that template. It was
+# wrong here, and not marginally: the daemon raises `action_start` at a turn's FIRST TOOL CALL,
+# `move_companion` IS a tool call, and the two tokens reach the engine in the SAME trigger batch.
+# The fold applies them in order and the LAST edge wins — so `walk_left` moved her into this state
+# and `action_start`, one token later, pulled her straight back out. The pet never moved, twice out
+# of three attempts, and the only difference in the third was that the two landed in different
+# frames. An AI-asked move was a coin flip on scheduling.
+#
+# So: no `action_start`, and no `music_*` either, for the same reason one step further on. A walk is
+# SHORT and already in flight; work and a tempo band are both things that will still be true when
+# she sits down. A band in particular is a LEVEL Astra re-states on a heartbeat, so it catches her
+# in `sit` a few seconds later and nothing is lost — which is exactly the property the file relies
+# on for a sleeping pet. `idle_timeout` stays, as the dead-man's handle it is everywhere else.
+[states.sit_walk]
+clip = "walk"
+loop = true
+[[states.sit_walk.transitions]]
+on = "walk_end"
+to = "sit"
+[[states.sit_walk.transitions]]
+on = "dragged"
+to = "drag"
+[[states.sit_walk.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+
+# SHE REMINDS YOU — a reminder has fired and its toast is still unanswered.
+#
+# The producer is in the OTHER repo, and this is the second LEVEL in the file after the music
+# band: `reminder_start` means *a toast is standing right now* and Astra RE-STATES it on a
+# heartbeat; `reminder_end` means nothing is waiting any more — the toast was closed, snoozed or
+# switched off, which in Astra all go through one function. `triggers.rs` carries the reasoning.
+# Standalone neither arrives and these two states are unreachable — the standalone contract, not a
+# defect.
+#
+# **One looping clip and no brackets**, so `reminder_end` is IMMEDIATE: there is no outro to cover
+# the move, and she leaves in the tick the token lands. `[states.action]` reads differently for that
+# reason alone; a future `reminder_out.png` changes the feel without changing a single edge here.
+#
+# TWO STATES ON ONE SHEET, for the fourth time in this file (`sleep`, `action`, the dance): the
+# graph is guard-less, so "go back to where she was" is a second vertex and never a condition on an
+# edge. One state exiting to `idle` would leave a perched pet in `idle` for a PACED frame with a
+# window jump either side of it — the "мерцание" the sleeping pair was split to fix. The derived
+# seat is 52, `sit`'s own, so the perched half enters and leaves without moving the window.
+#
+# **Neither state answers `reminder_start`.** That absence is what makes the heartbeat a no-op
+# instead of a sheet restarting from cell 0 every fifteen seconds — idempotence by omission, as on
+# `[states.action]` and a dance on its own band.
+#
+# THE PRIORITY, and all of it is DATA:
+#   * **work outranks a reminder** — both states answer `action_start`, and neither working state
+#     answers `reminder_start`. Nothing is lost by waiting: the token is a level, so the first
+#     heartbeat after `action_end` brings her back;
+#   * **a reminder outranks the music** — the six dance states answer `reminder_start`, and nothing
+#     here answers a band (a band is a level too, so the record resumes a heartbeat after);
+#   * **a walk is not interrupted** — `[states.sit_walk]` answers no daemon token at all, for the
+#     reason written above it, and a reminder raised mid-stroll catches her in `sit` a heartbeat
+#     later;
+#   * **a sleeping pet is woken by the cue itself**, into `idle` or `sit`, and the daemon's early
+#     first re-statement takes it from there — the last paragraph of `[states.sleep]` says why the
+#     sleeping states do not answer it directly.
+#
+# `idle_timeout` is the dead-man's handle, for the reason it is one everywhere else: a looping
+# variant raises no `clip_finished`, so if a `reminder_end` is ever lost — a cue the daemon could
+# not re-send, a stream that reconnected at the wrong moment — nothing else in this graph can free
+# her. While Astra's heartbeat runs it cannot fire, because every statement rouses the clock
+# (`app::daemon::rouses`) — unless `[sleep]` is set shorter than the heartbeat, booked in `TODO.md`.
+#
+# `dragged` is mandatory: the pose invariant declines to overrule a state it does not own, so
+# without it a pet picked up mid-reminder would go on reminding you in your hand. No `on = "sit"`
+# on either — rung 1 of the invariant would take that edge the frame she was set down on a window
+# edge. **The three `walk_*` SIDES are answered on `sit_reminder`, and `walk_start` is not.** A side
+# is a person asking (`move_companion`), and it can arrive with no `action_start` ahead of it — a
+# second move in one turn, after a heartbeat has put her back here, finds the turn's only
+# `action_start` long spent. The start is the engine's own dwell, which has no business walking a
+# pet away from a reminder she is showing. The walk ends in `sit`, and the next heartbeat brings the
+# reminder back.
+[states.reminder]
+clip = "reminder"
+loop = true
+[[states.reminder.transitions]]
+on = "reminder_end"
+to = "idle"
+[[states.reminder.transitions]]
+on = "dragged"
+to = "drag"
+[[states.reminder.transitions]]
+on = "action_start"
+to = "action"
+[[states.reminder.transitions]]
+on = "idle_timeout"
+to = "sleep"
+
+# The perched twin. One difference and it is the whole point of the state: `reminder_end` lands in
+# `sit`, not `idle` — and every other edge lands in its own perched family.
+[states.sit_reminder]
+clip = "reminder"
+loop = true
+[[states.sit_reminder.transitions]]
+on = "reminder_end"
+to = "sit"
+[[states.sit_reminder.transitions]]
+on = "dragged"
+to = "drag"
+[[states.sit_reminder.transitions]]
+on = "action_start"
+to = "sit_action"
+[[states.sit_reminder.transitions]]
+on = "idle_timeout"
+to = "sit_sleep"
+[[states.sit_reminder.transitions]]
+on = "walk_left"
+to = "sit_walk"
+[[states.sit_reminder.transitions]]
+on = "walk_middle"
+to = "sit_walk"
+[[states.sit_reminder.transitions]]
+on = "walk_right"
+to = "sit_walk"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# THE OVERLAY AXIS — the weather, drawn over her head while she goes on doing whatever she is doing.
+#
+# Three tables mirroring the three above them: `[overlay]` is the `[sprite]` of this axis,
+# `[[overlay_clips]]` its `[[clips]]`, `[overlays]` its `[states]`. They drive a SECOND
+# `AnimatorController` and a SECOND flipbook player (`config/overlay.rs`, `render/overlay.rs`), so
+# everything the pet's graph can do — the three-part performance, transitions, variants, gates —
+# this one can do too, and none of it had to be written twice.
+#
+# **Nothing here is raised by this engine.** All five tokens are `triggers::Raiser::Daemon`: Astra
+# looks the weather up and sends the cue. Standalone, the graph sits in `none` for ever and the pet
+# is bit-identical to the build before the axis existed — the same standalone contract `[states.action]`
+# has.
+#
+# The twelve sheets are CUT from four source sheets whose cells are 64 wide x 76 TALL, three rows =
+# appear / loop / disappear. Every source's art fits inside the top 64 rows of its cell (the tallest,
+# storm, spans 2..63), so the cut is lossless and keeps each frame's offset from the cell top — which
+# is exactly what the cell-to-cell anchoring in `[overlay].offset` depends on.
+
+[overlay]
+frame  = 64
+scale  = 4
+fps    = 10
+# See `overlay_law::OFFSET` for how this is read. -20 puts the cloud 8 source px clear of her head,
+# the rain's drops 10 px PAST it through her hair, and the storm's bolt 35 px past. Every value
+# this has held was settled by looking at the screen, not by the arithmetic — -56 read as a cloud
+# somewhere in the sky, -28 still read as too far off her, and this is what the owner asked for.
+offset = [0, -20]
+
+# The tempo is a first guess and the numbers here most likely to want the user's eye: 12 fps for the
+# two brackets (~0.5 s to appear, ~0.5 s to go) and a slower loop, because the brackets are a move
+# and the loop is a mood. Storm runs its loop faster than the others — it is lightning, and
+# lightning that dawdles reads as a lamp.
+[[overlay_clips]]
+name = "weather_sun_in"
+file = "sprites/weather_sun_in.png"
+fps  = 12
+[[overlay_clips]]
+name = "weather_sun"
+file = "sprites/weather_sun_loop.png"
+fps  = 5
+[[overlay_clips]]
+name = "weather_sun_out"
+file = "sprites/weather_sun_out.png"
+fps  = 12
+
+[[overlay_clips]]
+name = "weather_cloud_in"
+file = "sprites/weather_cloud_in.png"
+fps  = 12
+[[overlay_clips]]
+name = "weather_cloud"
+file = "sprites/weather_cloud_loop.png"
+fps  = 5
+[[overlay_clips]]
+name = "weather_cloud_out"
+file = "sprites/weather_cloud_out.png"
+fps  = 12
+
+[[overlay_clips]]
+name = "weather_rain_in"
+file = "sprites/weather_rain_in.png"
+fps  = 12
+[[overlay_clips]]
+name = "weather_rain"
+file = "sprites/weather_rain_loop.png"
+fps  = 6
+[[overlay_clips]]
+name = "weather_rain_out"
+file = "sprites/weather_rain_out.png"
+fps  = 12
+
+[[overlay_clips]]
+name = "weather_storm_in"
+file = "sprites/weather_storm_in.png"
+fps  = 12
+[[overlay_clips]]
+name = "weather_storm"
+file = "sprites/weather_storm_loop.png"
+fps  = 8
+[[overlay_clips]]
+name = "weather_storm_out"
+file = "sprites/weather_storm_out.png"
+fps  = 12
+
+[overlays]
+default = "none"
+
+# NOTHING IS SHOWING — a state with no clip and no variants, and the axis's whole resting picture.
+#
+# `validate_state_table` says nothing about a clip-less state, `AnimatorController::select` answers
+# `None`, and `Renderer::tick_overlay` stops the player. It is FIRST in the file as well as named in
+# `default`, so a typo'd default falls back to it rather than to the weather (a dangling default is
+# repaired to the first DEFINED state).
+#
+# **`resolve_state_table` would otherwise have substituted the first clip here** — the rule that
+# keeps a pet with a typo'd state visible rather than click-through — which is why the overlay's
+# resolve passes `EmptyState::Keep`. Without it this state would show `weather_sun_in` for ever.
+[overlays.none]
+[[overlays.none.transitions]]
+on = "weather_sun"
+to = "sun"
+[[overlays.none.transitions]]
+on = "weather_cloud"
+to = "cloud"
+[[overlays.none.transitions]]
+on = "weather_rain"
+to = "rain"
+[[overlays.none.transitions]]
+on = "weather_storm"
+to = "storm"
+
+# The four weather states. Each answers the other three tokens — so a change of conditions plays the
+# outgoing sheet's `end` and then the incoming one's `start`, for free, out of the same
+# intro/outro machinery the pet's working state uses — plus `weather_clear`, which is the axis's off
+# switch.
+#
+# **None of them answers its OWN token**, and that is idempotence by omission, exactly as
+# `[states.action]` gets it: a second lookup of the same conditions must be a no-op, not a restarted
+# appearance.
+#
+# There is deliberately no `dragged` edge and no `idle_timeout` one. The overlay is not a pose, so
+# the pose invariant never touches it; and an overlay that outlives its turn is a cosmetic fault,
+# not a pet stuck in a work loop, so it needs no dead-man's handle. The daemon closes the bracket.
+[overlays.sun]
+clip  = "weather_sun"
+loop  = true
+start = "weather_sun_in"
+end   = "weather_sun_out"
+[[overlays.sun.transitions]]
+on = "weather_clear"
+to = "none"
+[[overlays.sun.transitions]]
+on = "weather_cloud"
+to = "cloud"
+[[overlays.sun.transitions]]
+on = "weather_rain"
+to = "rain"
+[[overlays.sun.transitions]]
+on = "weather_storm"
+to = "storm"
+
+[overlays.cloud]
+clip  = "weather_cloud"
+loop  = true
+start = "weather_cloud_in"
+end   = "weather_cloud_out"
+[[overlays.cloud.transitions]]
+on = "weather_clear"
+to = "none"
+[[overlays.cloud.transitions]]
+on = "weather_sun"
+to = "sun"
+[[overlays.cloud.transitions]]
+on = "weather_rain"
+to = "rain"
+[[overlays.cloud.transitions]]
+on = "weather_storm"
+to = "storm"
+
+[overlays.rain]
+clip  = "weather_rain"
+loop  = true
+start = "weather_rain_in"
+end   = "weather_rain_out"
+[[overlays.rain.transitions]]
+on = "weather_clear"
+to = "none"
+[[overlays.rain.transitions]]
+on = "weather_sun"
+to = "sun"
+[[overlays.rain.transitions]]
+on = "weather_cloud"
+to = "cloud"
+[[overlays.rain.transitions]]
+on = "weather_storm"
+to = "storm"
+
+[overlays.storm]
+clip  = "weather_storm"
+loop  = true
+start = "weather_storm_in"
+end   = "weather_storm_out"
+[[overlays.storm.transitions]]
+on = "weather_clear"
+to = "none"
+[[overlays.storm.transitions]]
+on = "weather_sun"
+to = "sun"
+[[overlays.storm.transitions]]
+on = "weather_cloud"
+to = "cloud"
+[[overlays.storm.transitions]]
+on = "weather_rain"
+to = "rain"
+
+[states.stage_hidden_a]
+clip="stage_blank_a"
+loop=false
+[[states.stage_hidden_a.transitions]]
+on="clip_finished"
+to="idle"
+
+[states.stage_hidden_b]
+clip="stage_blank_b"
+loop=false
+[[states.stage_hidden_b.transitions]]
+on="clip_finished"
+to="idle"

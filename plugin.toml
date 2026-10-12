@@ -1,0 +1,27 @@
+[plugin]
+id = "pixel-drummer"
+name = "Pixel Drummer"
+version = "0.4.1"
+description = "Original pixel Nayu follows local music with four instruments, vocal detection, a concert stage and desktop adventures."
+min_astra_version = "0.2.6"
+author = "Voltur"
+license = "MIT"
+
+[entry]
+command = "python"
+args = ["-m", "src.plugin"]
+cwd = "."
+runtimes = ["python"]
+
+[capabilities]
+tools = true
+actions = true
+ui_contributions = true
+dom_access = true
+
+[permissions]
+dom_access = { reason = "Show Nayu playing music, switch her instruments and restore the ordinary companion when the performance ends." }
+
+[platform]
+os = ["windows"]
+arch = ["x86_64"]

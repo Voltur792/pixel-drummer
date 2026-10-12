@@ -1,0 +1,5 @@
+[character]
+kind = "pixel"
+name = "Nayu — барабаны"
+model = "builtin:nayu-2d"
+animations = "pixel-drummer-beats"

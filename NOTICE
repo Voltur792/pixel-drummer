@@ -1,0 +1,24 @@
+Pixel Drummer
+Copyright (c) 2026 Voltur
+
+The MIT license in LICENSE covers the plugin code, icon and newly authored
+instrument artwork. It does not replace the licenses or ownership of third-party
+materials.
+
+Nayu
+The original Nayu character artwork and built-in companion animation definitions
+come from Astra and remain the property of their respective authors. Musical
+sprites are modifications of that artwork; no ownership of the original
+character is claimed. This project is an independent plugin for Astra.
+
+YAMNet ONNX model
+Source: https://huggingface.co/audiomagic/yamnet-onnx
+Revision: f25b741c2f0bdc6d7e6db24b5fddda23347dbafd
+License: Apache License 2.0 (src/resources/models/LICENSE)
+YAMNet was developed by the TensorFlow/Google AudioSet authors.
+
+AudioSet class labels
+Source: https://research.google.com/audioset/download.html
+License: Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+The class-label table is distributed in src/resources/models/yamnet_class_map.csv.
