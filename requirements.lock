@@ -14,12 +14,7 @@ grpcio==1.84.0
     #   grpcio-tools
 grpcio-tools==1.84.0
     # via astra-plugin-sdk
-numpy==2.4.6 ; python_full_version < '3.12'
-    # via
-    #   -r requirements.txt
-    #   onnxruntime
-    #   soundcard
-numpy==2.5.4 ; python_full_version >= '3.12'
+numpy==2.5.4
     # via
     #   -r requirements.txt
     #   onnxruntime

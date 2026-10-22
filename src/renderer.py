@@ -294,7 +294,7 @@ class Companion(QWidget):
         if now-self.last_status>.5:
             self.last_status=now
             safe={k:v for k,v in self.features.items() if k!='hits'}
-            status=dict(version='0.5.0',session=self.session,pid=os.getpid(),heartbeat=now,
+            status=dict(version='0.5.1',session=self.session,pid=os.getpid(),heartbeat=now,
                         ready=True,visible=self.visible,state=self.stage.state,instrument=self.stage.instrument,
                         position=[round(x,1),round(y,1)],screen=screen,visited=self.visited,
                         screens=[s.__dict__ for s in self.screen_defs],audio=safe,
