@@ -4,7 +4,7 @@ astra-plugin-sdk==0.6.2
     # via -r requirements.txt
 cffi==2.1.1
     # via soundcard
-comtypes==1.4.17
+comtypes==1.4.17 ; sys_platform == 'win32'
     # via -r requirements.txt
 flatbuffers==25.12.19
     # via onnxruntime
@@ -14,7 +14,12 @@ grpcio==1.84.0
     #   grpcio-tools
 grpcio-tools==1.84.0
     # via astra-plugin-sdk
-numpy==2.5.4
+numpy==2.4.6 ; python_full_version < '3.12'
+    # via
+    #   -r requirements.txt
+    #   onnxruntime
+    #   soundcard
+numpy==2.5.4 ; python_full_version >= '3.12'
     # via
     #   -r requirements.txt
     #   onnxruntime
@@ -30,7 +35,7 @@ protobuf==7.36.2
     #   astra-plugin-sdk
     #   grpcio-tools
     #   onnxruntime
-pycparser==3.11
+pycparser==3.11 ; implementation_name != 'PyPy'
     # via cffi
 pyside6==6.11.2
     # via -r requirements.txt

@@ -19,3 +19,7 @@ release-check/
 *.astraplugin.json
 *.sigstore.jsonl
 .release-notes.md
+
+.tmp-platform-tests/
+
+AGENTS.md

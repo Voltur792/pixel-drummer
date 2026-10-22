@@ -27,6 +27,7 @@ from .motion import MotionClock, vocal_active, instrument_activity, body_sway, p
 from .concert import ConcertWindow
 from .desktop_play import DesktopPlay
 from .music_effects import draw_effects
+from .platform_support import capabilities, process_alive, recording_source
 
 ROOT=Path(__file__).resolve().parents[1]
 ART=ROOT/'src/resources/assets/band'
@@ -48,15 +49,10 @@ class Loopback(threading.Thread):
         return value
 
     def run(self):
-        import soundcard as sc
         while not self.stop_event.is_set():
             try:
-                speaker=sc.default_speaker()
-                if speaker is None:
-                    raise RuntimeError('Нет устройства воспроизведения')
-                mic=sc.get_microphone(speaker.id,include_loopback=True)
-                if not mic.isloopback:
-                    raise RuntimeError('Устройство не является speaker loopback')
+                import soundcard as sc
+                mic=recording_source(sc)
                 analyzer=Analyzer()
                 check_device=time.monotonic()
                 pending=None
@@ -92,7 +88,7 @@ class Loopback(threading.Thread):
                             self.value=snapshot
                         if now-check_device>3:
                             check_device=now
-                            if sc.default_speaker().id!=speaker.id:
+                            if recording_source(sc).id!=mic.id:
                                 break
             except Exception as exc:
                 with self.lock:
@@ -132,7 +128,8 @@ class Companion(QWidget):
         self.lease=self.started
         self.mode,self.instrument='auto','auto'
         self.visible=False
-        self.roam=True
+        self.platform_features=capabilities()
+        self.roam=self.platform_features['screen_walking']
         self.effects=True
         self.head=True
         self.control_revision=None
@@ -193,7 +190,7 @@ class Companion(QWidget):
         self.visible=bool(control.get('visible',False))
         self.mode=control.get('mode','auto')
         self.instrument=control.get('instrument','auto')
-        self.roam=bool(control.get('roam',True))
+        self.roam=bool(control.get('roam',True)) and self.platform_features['screen_walking']
         self.effects=bool(control.get('effects',True))
         revision=control.get('revision')
         if revision!=self.control_revision:
@@ -214,6 +211,7 @@ class Companion(QWidget):
 
     def parent_alive(self):
         if not self.parent_pid: return True
+        if os.name != 'nt': return process_alive(self.parent_pid)
         # Own parent-process liveness only; no inspection/control of other apps.
         kernel=ctypes.WinDLL('kernel32',use_last_error=True)
         kernel.OpenProcess.restype=ctypes.c_void_p
@@ -296,7 +294,7 @@ class Companion(QWidget):
         if now-self.last_status>.5:
             self.last_status=now
             safe={k:v for k,v in self.features.items() if k!='hits'}
-            status=dict(version='0.4.1',session=self.session,pid=os.getpid(),heartbeat=now,
+            status=dict(version='0.5.0',session=self.session,pid=os.getpid(),heartbeat=now,
                         ready=True,visible=self.visible,state=self.stage.state,instrument=self.stage.instrument,
                         position=[round(x,1),round(y,1)],screen=screen,visited=self.visited,
                         screens=[s.__dict__ for s in self.screen_defs],audio=safe,
@@ -309,6 +307,7 @@ class Companion(QWidget):
             status['desktop']=dict(phase=self.desktop.phase,borrowed=len(self.desktop.borrowed),icons_seen=len(self.desktop.observer.snapshot()),
                                    observer_error=self.desktop.observer.error,surfaces=len(self.desktop.windows),events=self.desktop.events[-8:])
             status['motion']=dict(period=round(self.motion.period,3),head_cycle_seconds=round(self.motion.period*2,3))
+            status['platform_features']=self.platform_features
             atomic_json(self.data/'renderer-status.json',status)
 
     def performance(self,now):
@@ -402,14 +401,17 @@ class Companion(QWidget):
                 action.triggered.connect(lambda checked=False,v=value:self.local_control(instrument=v))
             roam=menu.addAction('Прогулки между экранами')
             roam.setCheckable(True);roam.setChecked(self.roam)
+            roam.setEnabled(self.platform_features['screen_walking'])
             roam.triggered.connect(lambda checked:self.local_control(roam=checked))
             effects=menu.addAction('Волны и частицы')
             effects.setCheckable(True);effects.setChecked(self.effects)
             effects.triggered.connect(lambda checked:self.local_control(effects=checked))
             menu.addSeparator()
             menu.addAction('Собрать группу на сцене').triggered.connect(lambda:self.local_control(mode='concert'))
-            menu.addAction('Прогуляться по окну').triggered.connect(lambda:self.local_control(mode='walk',desktop_event='window'))
-            menu.addAction('Поиграть с копиями иконок').triggered.connect(lambda:self.local_control(mode='walk',desktop_event='icon'))
+            for label,kind in [('Прогуляться по окну','window'),('Поиграть с копиями иконок','icon')]:
+                action=menu.addAction(label)
+                action.setEnabled(self.platform_features['desktop_events'])
+                action.triggered.connect(lambda checked=False,k=kind:self.local_control(mode='walk',desktop_event=k))
             menu.addAction('Вернуть обычную Nayu').triggered.connect(lambda:self.local_control(mode='restore',stop=True))
             menu.exec(event.globalPosition().toPoint())
 

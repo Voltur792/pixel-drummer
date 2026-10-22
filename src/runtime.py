@@ -9,10 +9,17 @@ import time
 import uuid
 from .assets import ROOT
 from .ipc import atomic_json as write_json
+from .platform_support import config_directory
 
 
 def data_directory():
-    return Path(os.environ.get('PIXEL_DRUMMER_DATA',str(ROOT/'data')))
+    if os.environ.get('PIXEL_DRUMMER_DATA'):
+        return Path(os.environ['PIXEL_DRUMMER_DATA'])
+    legacy = ROOT / 'data'
+    target = legacy if os.name == 'nt' else config_directory() / 'pixel-drummer'
+    if (legacy / 'settings.json').exists() and not (target / 'settings.json').exists():
+        return legacy
+    return target
 
 
 class Runtime:
@@ -36,7 +43,7 @@ class Runtime:
         # Keep the same native frame centre/contact line on first activation.
         # Only companion geometry is read; other app settings are untouched.
         try:
-            folder=Path(os.environ['APPDATA'])/'astra/astra/config/companion'
+            folder=config_directory()/'companion'
             settings=json.loads((folder/'settings.json').read_text(encoding='utf-8'))
             window=settings['window'];size=window['size'];x,y=window['pos']
             native_position=[x+size/2,y+size/2+(52-32)*4]

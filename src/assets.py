@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+from .platform_support import config_directory
 
 ROOT = Path(__file__).resolve().parents[1]
 CHARACTER = "pixel-drummer-nayu"
@@ -15,7 +16,7 @@ def pack_directory() -> Path:
     override = os.environ.get("PIXEL_DRUMMER_PACK")
     if override:
         return Path(override)
-    return Path(os.environ["APPDATA"]) / "astra" / "astra" / "config" / "companion" / "pack"
+    return config_directory() / "companion" / "pack"
 
 
 def install(pack: Path | None = None) -> dict:

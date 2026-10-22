@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from astra_plugin_sdk import Plugin, ui_call, tool, action
 from .assets import install, CHARACTER, ANIMSET
-from .runtime import Runtime
+from .runtime import Runtime, data_directory
 
 
 class PixelDrummer(Plugin):
@@ -50,7 +50,7 @@ class PixelDrummer(Plugin):
     async def report(self, payload: dict):
         self.diagnostic = payload
         # This contains only our own command results, not session tokens or app settings.
-        destination = Path(os.environ.get("PIXEL_DRUMMER_DATA", str(Path(__file__).resolve().parents[1] / "data")))
+        destination = data_directory()
         destination.mkdir(parents=True, exist_ok=True)
         (destination / "diagnostic.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         return {"ok": True}
