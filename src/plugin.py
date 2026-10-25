@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 from astra_plugin_sdk import Plugin, ui_call, tool, action
+from . import VERSION
 from .assets import install, CHARACTER, ANIMSET
 from .runtime import Runtime, data_directory
 
@@ -48,6 +49,7 @@ class PixelDrummer(Plugin):
 
     @ui_call
     async def report(self, payload: dict):
+        payload = {**payload, "version": VERSION}
         self.diagnostic = payload
         # This contains only our own command results, not session tokens or app settings.
         destination = data_directory()

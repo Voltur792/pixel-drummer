@@ -14,7 +14,7 @@
   let hiddenSide=false, lastHidden=0;
   const call = (method,params={}) => bridge.callBackend(method,params);
   const report = async payload => {
-    try { await call("report",{payload:{version:"0.4.1",visible_panel:false,...payload}}); } catch (_) {}
+    try { await call("report",{payload:{visible_panel:false,...payload}}); } catch (_) {}
   };
   async function wear(target) {
     const result=await native.invoke("run_character_verb",{verb:{wear:{id:target}}});

@@ -6,13 +6,13 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / 'src/resources/assets/pack'
-SPRITES = PACK / 'characters/pixel-drummer-nayu/sprites'
+SPRITES = PACK / 'animpacks/pixel-drummer-beats/clips'
 
 
 class AnimationTests(unittest.TestCase):
     def test_native_graph_preserves_daily_behaviour_and_music_brackets(self):
-        native = tomllib.loads((PACK / 'animsets/pixel-band-proxy/animset.toml').read_text(encoding='utf-8'))
-        current = tomllib.loads((PACK / 'animsets/pixel-drummer-beats/animset.toml').read_text(encoding='utf-8'))
+        native = tomllib.loads((PACK / 'animpacks/pixel-band-proxy/animpack.toml').read_text(encoding='utf-8'))
+        current = tomllib.loads((PACK / 'animpacks/pixel-drummer-beats/animpack.toml').read_text(encoding='utf-8'))
         self.assertEqual(current['sprite'], native['sprite'])
         for state in ('idle', 'sit', 'sit_walk', 'drag', 'sleep', 'greet', 'action'):
             self.assertEqual(current['states'][state], native['states'][state])

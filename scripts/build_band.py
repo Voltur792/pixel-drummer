@@ -221,21 +221,24 @@ atlas(heads,OUT/'heads.png')
 # An invisible native character reserves the normal Astra API lifecycle. It is
 # only worn after the external renderer is ready; DOM restores on stop/failure.
 proxy=ROOT/'src/resources/assets/pack/characters/pixel-band-proxy'
-(proxy/'sprites').mkdir(parents=True,exist_ok=True)
+proxy.mkdir(parents=True,exist_ok=True)
+anim=ROOT/'src/resources/assets/pack/animpacks/pixel-band-proxy'
+(anim/'clips').mkdir(parents=True,exist_ok=True)
 for side in ('a','b'):
     # Distinct clip names AND resource paths are necessary. Changing only the
     # state preserves the player's clock when both states reuse the same clip.
-    Image.new('RGBA',(1024,576)).save(proxy/f'sprites/blank-{side}.png')
-(proxy/'character.toml').write_text('[character]\nkind="pixel"\nname="Nayu — музыкальная сцена"\nmodel="builtin:nayu-2d"\nanimations="pixel-band-proxy"\n',encoding='utf-8')
-anim=ROOT/'src/resources/assets/pack/animsets/pixel-band-proxy'
-anim.mkdir(parents=True,exist_ok=True)
+    Image.new('RGBA',(1024,576)).save(anim/f'clips/blank-{side}.png')
+(proxy/'character.toml').write_text('[character]\nkind="pixel"\nname="Nayu — музыкальная сцена"\nmodel="builtin:nayu-2d"\nanimpack="pixel-band-proxy"\n',encoding='utf-8',newline='\n')
 native=(ROOT/'assets/native-source/builtin.toml').read_text(encoding='utf-8')
-native=native.replace('name = "Nayu (2D)"','name = "Nayu stage proxy"')
+# Astra 0.2.7 pack schema 5, as its own converter writes it.
+native=native.replace('[animations]','[animpack]',1)
+native=native.replace('name = "Nayu (2D)"','name = "Nayu stage proxy"\nuid = "user.e1ddc569d2fb8940"')
+native=native.replace('file = "sprites/','file = "builtin:nayu-2d-anims/')
 blank_clips=''
 for side in ('a','b'):
     blank_clips+=f'''[[clips]]
 name="stage_blank_{side}"
-file="sprites/blank-{side}.png"
+file="clips/blank-{side}.png"
 frames=144
 seat=52
 fps=24
@@ -251,7 +254,7 @@ loop=false
 on="clip_finished"
 to="idle"
 '''
-(anim/'animset.toml').write_text(native,encoding='utf-8')
+(anim/'animpack.toml').write_text(native,encoding='utf-8',newline='\n')
 
 comparison=Image.new('RGBA',(1280,256),'#353047')
 comparison.alpha_composite(BASE.resize((256,256),Image.Resampling.NEAREST))

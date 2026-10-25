@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/native-source'
 PACK = ROOT / 'src/resources/assets/pack'
-SPRITES = PACK / 'characters/pixel-drummer-nayu/sprites'
+SPRITES = PACK / 'animpacks/pixel-drummer-beats/clips'
 SPRITES.mkdir(parents=True, exist_ok=True)
 BASE = Image.open(SOURCE / '00-320x128.png').convert('RGBA').crop((0, 0, 64, 64))
 OUTLINE = '#51465d'
@@ -174,15 +174,19 @@ def fields(table):
         if not isinstance(v, dict) and not (isinstance(v, list) and v and isinstance(v[0], dict)):
             lines.append(f'{k} = {value(v)}')
     lines.append('')
-parsed['animations']['name'] = 'Nayu — автоматические барабаны'
+# Astra 0.2.7 pack schema 5: [animpack] with a stable uid; native sheets are
+# referenced from the engine, ours live in this pack's clips/.
+parsed['animpack'] = dict(parsed.pop('animations'), name='Nayu — автоматические барабаны', uid='user.aac6332a2bb60af2')
+for clip in parsed['clips'] + parsed['overlay_clips']:
+    clip['file'] = clip['file'].replace('sprites/', 'builtin:nayu-2d-anims/', 1)
 for clip in parsed['clips']:
     if clip['name'].startswith('dance_'):
         band = clip['name'].split('_')[1]
-        clip.update(file='sprites/drums-native-loop.png', frames=192, seat=52,
+        clip.update(file='clips/drums-native-loop.png', frames=192, seat=52,
                     fps={'slow': 22.6667, 'mid': 30.9333, 'fast': 40.0}[band])
 parsed['clips'].extend([
-    dict(name='drums_in', file='sprites/drums-native-in.png', frames=32, fps=24, seat=52, loop=False),
-    dict(name='drums_out', file='sprites/drums-native-out.png', frames=32, fps=24, seat=52, loop=False),
+    dict(name='drums_in', file='clips/drums-native-in.png', frames=32, fps=24, seat=52, loop=False),
+    dict(name='drums_out', file='clips/drums-native-out.png', frames=32, fps=24, seat=52, loop=False),
 ])
 for name, state in parsed['states'].items():
     if isinstance(state, dict) and 'dance_' in name:
@@ -195,7 +199,7 @@ for band in ('slow', 'mid', 'fast'):
         'clip': 'dance_' + band, 'loop': True, 'start': 'drums_in', 'end': 'drums_out',
         'transitions': [{'on': 'dragged', 'to': 'drag'}, {'on': 'drag_end', 'to': 'idle'}],
     }
-for section in ('animations', 'sprite', 'overlay'):
+for section in ('animpack', 'sprite', 'overlay'):
     lines.append(f'[{section}]'); fields(parsed[section])
 for section in ('clips', 'overlay_clips'):
     for clip in parsed[section]:
@@ -212,8 +216,8 @@ for section in ('states', 'overlays'):
             if isinstance(subvalue, list) and subvalue and isinstance(subvalue[0], dict):
                 for row in subvalue:
                     lines.append(f'[[{section}.{name}.{subkey}]]'); fields(row)
-destination = PACK / 'animsets/pixel-drummer-beats/animset.toml'
-destination.write_text('\n'.join(lines), encoding='utf-8')
+destination = PACK / 'animpacks/pixel-drummer-beats/animpack.toml'
+destination.write_text('\n'.join(lines), encoding='utf-8', newline='\n')
 tomllib.loads(destination.read_text(encoding='utf-8'))
 
 # Reviewable preview at the actual native scale, with original beside drummer.

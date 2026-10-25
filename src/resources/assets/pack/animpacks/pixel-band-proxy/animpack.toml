@@ -1,6 +1,7 @@
-[animations]
+[animpack]
 kind = "pixel"
 name = "Nayu stage proxy"
+uid = "user.e1ddc569d2fb8940"
 
 [sprite]
 frame       = 64
@@ -11,15 +12,15 @@ seat_offset = 0
 # Standing / floating poses: the feet ARE the lowest pixels, so the fallback seat is right.
 [[clips]]
 name = "idle"
-file = "sprites/idle.png"
+file = "builtin:nayu-2d-anims/idle.png"
 fps  = 8
 [[clips]]
 name = "fly"
-file = "sprites/idle_fly.png"
+file = "builtin:nayu-2d-anims/idle_fly.png"
 fps  = 12
 [[clips]]
 name = "walk"
-file = "sprites/walk.png"
+file = "builtin:nayu-2d-anims/walk.png"
 fps  = 10
 # Measured, not assumed: every one of greet's 13 cells ends at source row 51, the same row
 # `idle.png` and `walk.png` end at — so the derived seat is already 52 and authoring one would only
@@ -32,24 +33,24 @@ fps  = 10
 # clip whose whole job is to be looked at.
 [[clips]]
 name = "greet"
-file = "sprites/greet.png"
+file = "builtin:nayu-2d-anims/greet.png"
 fps  = 7
 
 # Sitting poses: she rests on the edge at the PELVIS, legs hanging over it — `seat` sits ABOVE
 # the art's lowest pixel (tuned live; the bottom edge would be 55/56/55).
 [[clips]]
 name = "sit"
-file = "sprites/idle_sit.png"
+file = "builtin:nayu-2d-anims/idle_sit.png"
 fps  = 8
 seat = 52
 [[clips]]
 name = "sit2"
-file = "sprites/idle_sit_2.png"
+file = "builtin:nayu-2d-anims/idle_sit_2.png"
 fps  = 8
 seat = 53
 [[clips]]
 name = "sit_sad"
-file = "sprites/idle_sit_sad.png"
+file = "builtin:nayu-2d-anims/idle_sit_sad.png"
 fps  = 6
 seat = 52
 
@@ -68,12 +69,12 @@ seat = 52
 # box, and only the standing poses get that for free.
 [[clips]]
 name = "sleep"
-file = "sprites/sleep_loop.png"
+file = "builtin:nayu-2d-anims/sleep_loop.png"
 fps  = 4
 seat = 53
 [[clips]]
 name = "sleep_out"
-file = "sprites/sleep_out.png"
+file = "builtin:nayu-2d-anims/sleep_out.png"
 fps  = 10
 seat = 53
 
@@ -93,17 +94,17 @@ seat = 53
 # the work rather than as a move into it.
 [[clips]]
 name = "action_in"
-file = "sprites/action_execute_in.png"
+file = "builtin:nayu-2d-anims/action_execute_in.png"
 fps  = 10
 seat = 52
 [[clips]]
 name = "action"
-file = "sprites/action_execute_loop.png"
+file = "builtin:nayu-2d-anims/action_execute_loop.png"
 fps  = 8
 seat = 52
 [[clips]]
 name = "action_out"
-file = "sprites/action_execute_out.png"
+file = "builtin:nayu-2d-anims/action_execute_out.png"
 fps  = 10
 seat = 52
 
@@ -120,15 +121,15 @@ seat = 52
 # reason, and it is why this says `sit`'s value rather than the sitting family's.)
 [[clips]]
 name = "dance_slow"
-file = "sprites/dance.png"
+file = "builtin:nayu-2d-anims/dance.png"
 fps  = 4.25
 [[clips]]
 name = "dance_mid"
-file = "sprites/dance.png"
+file = "builtin:nayu-2d-anims/dance.png"
 fps  = 5.8
 [[clips]]
 name = "dance_fast"
-file = "sprites/dance.png"
+file = "builtin:nayu-2d-anims/dance.png"
 fps  = 7.5
 
 # THE REMINDER — one sheet, twenty-one cells, and ONE CYCLE rather than a performance.
@@ -154,19 +155,19 @@ fps  = 7.5
 # lively; 8 is the calmer of the two, and the one a pet showing a reminder for a long time wants.
 [[clips]]
 name = "reminder"
-file = "sprites/reminder.png"
+file = "builtin:nayu-2d-anims/reminder.png"
 fps  = 8
 
 [[clips]]
 name="stage_blank_a"
-file="sprites/blank-a.png"
+file="clips/blank-a.png"
 frames=144
 seat=52
 fps=24
 
 [[clips]]
 name="stage_blank_b"
-file="sprites/blank-b.png"
+file="clips/blank-b.png"
 frames=144
 seat=52
 fps=24
@@ -940,54 +941,54 @@ offset = [0, -20]
 # lightning that dawdles reads as a lamp.
 [[overlay_clips]]
 name = "weather_sun_in"
-file = "sprites/weather_sun_in.png"
+file = "builtin:nayu-2d-anims/weather_sun_in.png"
 fps  = 12
 [[overlay_clips]]
 name = "weather_sun"
-file = "sprites/weather_sun_loop.png"
+file = "builtin:nayu-2d-anims/weather_sun_loop.png"
 fps  = 5
 [[overlay_clips]]
 name = "weather_sun_out"
-file = "sprites/weather_sun_out.png"
+file = "builtin:nayu-2d-anims/weather_sun_out.png"
 fps  = 12
 
 [[overlay_clips]]
 name = "weather_cloud_in"
-file = "sprites/weather_cloud_in.png"
+file = "builtin:nayu-2d-anims/weather_cloud_in.png"
 fps  = 12
 [[overlay_clips]]
 name = "weather_cloud"
-file = "sprites/weather_cloud_loop.png"
+file = "builtin:nayu-2d-anims/weather_cloud_loop.png"
 fps  = 5
 [[overlay_clips]]
 name = "weather_cloud_out"
-file = "sprites/weather_cloud_out.png"
+file = "builtin:nayu-2d-anims/weather_cloud_out.png"
 fps  = 12
 
 [[overlay_clips]]
 name = "weather_rain_in"
-file = "sprites/weather_rain_in.png"
+file = "builtin:nayu-2d-anims/weather_rain_in.png"
 fps  = 12
 [[overlay_clips]]
 name = "weather_rain"
-file = "sprites/weather_rain_loop.png"
+file = "builtin:nayu-2d-anims/weather_rain_loop.png"
 fps  = 6
 [[overlay_clips]]
 name = "weather_rain_out"
-file = "sprites/weather_rain_out.png"
+file = "builtin:nayu-2d-anims/weather_rain_out.png"
 fps  = 12
 
 [[overlay_clips]]
 name = "weather_storm_in"
-file = "sprites/weather_storm_in.png"
+file = "builtin:nayu-2d-anims/weather_storm_in.png"
 fps  = 12
 [[overlay_clips]]
 name = "weather_storm"
-file = "sprites/weather_storm_loop.png"
+file = "builtin:nayu-2d-anims/weather_storm_loop.png"
 fps  = 8
 [[overlay_clips]]
 name = "weather_storm_out"
-file = "sprites/weather_storm_out.png"
+file = "builtin:nayu-2d-anims/weather_storm_out.png"
 fps  = 12
 
 [overlays]

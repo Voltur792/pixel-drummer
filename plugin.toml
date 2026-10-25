@@ -1,9 +1,9 @@
 [plugin]
 id = "pixel-drummer"
 name = "Pixel Drummer"
-version = "0.5.2"
+version = "0.6.0"
 description = "Original pixel Nayu follows local music with four instruments, vocal detection, a concert stage and desktop adventures."
-min_astra_version = "0.2.6"
+min_astra_version = "0.2.7"
 author = "Voltur"
 license = "MIT"
 

@@ -1,7 +1,8 @@
 # Native Nayu graph; only musical performances are replaced.
-[animations]
+[animpack]
 kind = "pixel"
 name = "Nayu — автоматические барабаны"
+uid = "user.aac6332a2bb60af2"
 
 [sprite]
 frame = 64
@@ -17,101 +18,101 @@ offset = [0, -20]
 
 [[clips]]
 name = "idle"
-file = "sprites/idle.png"
+file = "builtin:nayu-2d-anims/idle.png"
 fps = 8
 
 [[clips]]
 name = "fly"
-file = "sprites/idle_fly.png"
+file = "builtin:nayu-2d-anims/idle_fly.png"
 fps = 12
 
 [[clips]]
 name = "walk"
-file = "sprites/walk.png"
+file = "builtin:nayu-2d-anims/walk.png"
 fps = 10
 
 [[clips]]
 name = "greet"
-file = "sprites/greet.png"
+file = "builtin:nayu-2d-anims/greet.png"
 fps = 7
 
 [[clips]]
 name = "sit"
-file = "sprites/idle_sit.png"
+file = "builtin:nayu-2d-anims/idle_sit.png"
 fps = 8
 seat = 52
 
 [[clips]]
 name = "sit2"
-file = "sprites/idle_sit_2.png"
+file = "builtin:nayu-2d-anims/idle_sit_2.png"
 fps = 8
 seat = 53
 
 [[clips]]
 name = "sit_sad"
-file = "sprites/idle_sit_sad.png"
+file = "builtin:nayu-2d-anims/idle_sit_sad.png"
 fps = 6
 seat = 52
 
 [[clips]]
 name = "sleep"
-file = "sprites/sleep_loop.png"
+file = "builtin:nayu-2d-anims/sleep_loop.png"
 fps = 4
 seat = 53
 
 [[clips]]
 name = "sleep_out"
-file = "sprites/sleep_out.png"
+file = "builtin:nayu-2d-anims/sleep_out.png"
 fps = 10
 seat = 53
 
 [[clips]]
 name = "action_in"
-file = "sprites/action_execute_in.png"
+file = "builtin:nayu-2d-anims/action_execute_in.png"
 fps = 10
 seat = 52
 
 [[clips]]
 name = "action"
-file = "sprites/action_execute_loop.png"
+file = "builtin:nayu-2d-anims/action_execute_loop.png"
 fps = 8
 seat = 52
 
 [[clips]]
 name = "action_out"
-file = "sprites/action_execute_out.png"
+file = "builtin:nayu-2d-anims/action_execute_out.png"
 fps = 10
 seat = 52
 
 [[clips]]
 name = "dance_slow"
-file = "sprites/drums-native-loop.png"
+file = "clips/drums-native-loop.png"
 fps = 22.6667
 frames = 192
 seat = 52
 
 [[clips]]
 name = "dance_mid"
-file = "sprites/drums-native-loop.png"
+file = "clips/drums-native-loop.png"
 fps = 30.9333
 frames = 192
 seat = 52
 
 [[clips]]
 name = "dance_fast"
-file = "sprites/drums-native-loop.png"
+file = "clips/drums-native-loop.png"
 fps = 40.0
 frames = 192
 seat = 52
 
 [[clips]]
 name = "reminder"
-file = "sprites/reminder.png"
+file = "builtin:nayu-2d-anims/reminder.png"
 fps = 8
 
 [[clips]]
 name = "drums_in"
-file = "sprites/drums-native-in.png"
+file = "clips/drums-native-in.png"
 frames = 32
 fps = 24
 seat = 52
@@ -119,7 +120,7 @@ loop = false
 
 [[clips]]
 name = "drums_out"
-file = "sprites/drums-native-out.png"
+file = "clips/drums-native-out.png"
 frames = 32
 fps = 24
 seat = 52
@@ -127,62 +128,62 @@ loop = false
 
 [[overlay_clips]]
 name = "weather_sun_in"
-file = "sprites/weather_sun_in.png"
+file = "builtin:nayu-2d-anims/weather_sun_in.png"
 fps = 12
 
 [[overlay_clips]]
 name = "weather_sun"
-file = "sprites/weather_sun_loop.png"
+file = "builtin:nayu-2d-anims/weather_sun_loop.png"
 fps = 5
 
 [[overlay_clips]]
 name = "weather_sun_out"
-file = "sprites/weather_sun_out.png"
+file = "builtin:nayu-2d-anims/weather_sun_out.png"
 fps = 12
 
 [[overlay_clips]]
 name = "weather_cloud_in"
-file = "sprites/weather_cloud_in.png"
+file = "builtin:nayu-2d-anims/weather_cloud_in.png"
 fps = 12
 
 [[overlay_clips]]
 name = "weather_cloud"
-file = "sprites/weather_cloud_loop.png"
+file = "builtin:nayu-2d-anims/weather_cloud_loop.png"
 fps = 5
 
 [[overlay_clips]]
 name = "weather_cloud_out"
-file = "sprites/weather_cloud_out.png"
+file = "builtin:nayu-2d-anims/weather_cloud_out.png"
 fps = 12
 
 [[overlay_clips]]
 name = "weather_rain_in"
-file = "sprites/weather_rain_in.png"
+file = "builtin:nayu-2d-anims/weather_rain_in.png"
 fps = 12
 
 [[overlay_clips]]
 name = "weather_rain"
-file = "sprites/weather_rain_loop.png"
+file = "builtin:nayu-2d-anims/weather_rain_loop.png"
 fps = 6
 
 [[overlay_clips]]
 name = "weather_rain_out"
-file = "sprites/weather_rain_out.png"
+file = "builtin:nayu-2d-anims/weather_rain_out.png"
 fps = 12
 
 [[overlay_clips]]
 name = "weather_storm_in"
-file = "sprites/weather_storm_in.png"
+file = "builtin:nayu-2d-anims/weather_storm_in.png"
 fps = 12
 
 [[overlay_clips]]
 name = "weather_storm"
-file = "sprites/weather_storm_loop.png"
+file = "builtin:nayu-2d-anims/weather_storm_loop.png"
 fps = 8
 
 [[overlay_clips]]
 name = "weather_storm_out"
-file = "sprites/weather_storm_out.png"
+file = "builtin:nayu-2d-anims/weather_storm_out.png"
 fps = 12
 
 [states]

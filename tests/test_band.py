@@ -106,7 +106,7 @@ class StageTests(unittest.TestCase):
 
 class ArtTests(unittest.TestCase):
     def test_native_hide_heartbeat_restarts_distinct_clips_with_timed_recovery(self):
-        graph=tomllib.loads((ROOT/'src/resources/assets/pack/animsets/pixel-band-proxy/animset.toml').read_text(encoding='utf-8'))
+        graph=tomllib.loads((ROOT/'src/resources/assets/pack/animpacks/pixel-band-proxy/animpack.toml').read_text(encoding='utf-8'))
         states=[graph['states']['stage_hidden_'+side] for side in ('a','b')]
         self.assertNotEqual(states[0]['clip'],states[1]['clip'])
         clips={clip['name']:clip for clip in graph['clips']}
