@@ -17,6 +17,17 @@ class PlatformTests(unittest.TestCase):
             with patch.object(support.sys, 'platform', 'darwin'), patch.dict(os.environ, {}, clear=True):
                 self.assertEqual(support.config_directory(), Path(tmp) / 'Library' / 'Application Support' / 'com.astra.astra')
 
+    def test_scene_scale_follows_astra_avatar_size(self):
+        with TemporaryDirectory() as tmp:
+            settings = Path(tmp) / 'settings.json'
+            settings.write_text('{"companion": {"settings": {"windowSize": "390"}}}', encoding='utf-8')
+            self.assertAlmostEqual(support.avatar_scale(settings), 2.6)
+            settings.write_text('{"companion": {"settings": {"windowSize": 600}}}', encoding='utf-8')
+            self.assertEqual(support.avatar_scale(settings), 4)
+            settings.write_text('{"companion": {"enabled": true}}', encoding='utf-8')
+            self.assertEqual(support.avatar_scale(settings), 4)
+            self.assertEqual(support.avatar_scale(Path(tmp) / 'missing.json'), 4)
+
     def test_wayland_disables_screen_walking_but_xcb_override_does_not(self):
         with patch.object(support.sys, 'platform', 'linux'), patch.dict(os.environ, {'XDG_SESSION_TYPE': 'wayland'}, clear=True):
             self.assertFalse(support.capabilities()['screen_walking'])

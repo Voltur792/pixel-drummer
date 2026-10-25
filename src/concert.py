@@ -20,20 +20,26 @@ class ConcertWindow(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self.setWindowTitle('Nayu — музыкальная сцена')
-        self.resize(1088,384)
         self.started=None;self.leaving=None;self.now=0;self.music=False
         self.drag_offset=None
         self.effects=deque(maxlen=96);self.last_hit=-math.inf;self.last_note=None
-        self.setMask(QRegion(QRect(28,76,1032,288)))
+        self.fit()
+
+    def fit(self):
+        # A 272x96 stage in sprite pixels, at the companion's on-screen scale.
+        self.px=px=self.owner.px
+        self.resize(round(272*px),round(96*px))
+        self.setMask(QRegion(QRect(round(7*px),round(19*px),round(258*px),round(72*px))))
 
     def tick(self,requested,now,music):
         self.now,self.music=now,music
         if requested and self.started is None:
             self.started=now;self.leaving=None
             self.effects.clear();self.last_hit=now;self.last_note=None
+            self.fit();px=self.px
             x,y=self.owner.walker.position
             screen=next((s for s in self.owner.screen_defs if s.contains((x,y))),self.owner.screen_defs[0])
-            self.move(round(min(screen.right-1088,max(screen.x,x-544))),round(min(screen.floor-360,max(screen.y,y-320))))
+            self.move(round(min(screen.right-272*px,max(screen.x,x-136*px))),round(min(screen.floor-90*px,max(screen.y,y-80*px))))
         if self.started is None:return False
         if music and now-self.started>3.8 and self.leaving is None:
             for hit in self.owner.features.get('hits',[]):
@@ -61,7 +67,7 @@ class ConcertWindow(QWidget):
 
     def paintEvent(self,event):
         painter=QPainter(self);painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform,False)
-        painter.scale(4,4)
+        painter.scale(self.px,self.px)
         painter.fillRect(7,79,258,9,QColor('#382f50'))
         painter.fillRect(7,79,258,2,QColor('#a47da2'))
         painter.fillRect(10,88,252,3,QColor('#211c36'))

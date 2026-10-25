@@ -24,10 +24,12 @@ class RendererTests(unittest.TestCase):
         desktop.observer.snapshot.return_value = []
         desktop.observer.error = None
         features = dict(desktop_events=False, screen_walking=False, platform='linux', wayland=True)
-        with TemporaryDirectory() as tmp, patch.object(renderer, 'Loopback', return_value=audio), patch.object(renderer, 'DesktopPlay', return_value=desktop), patch.object(renderer, 'capabilities', return_value=features):
+        with TemporaryDirectory() as tmp, patch.object(renderer, 'Loopback', return_value=audio), patch.object(renderer, 'DesktopPlay', return_value=desktop), patch.object(renderer, 'capabilities', return_value=features), patch.object(renderer, 'avatar_scale', return_value=2.6):
             atomic_json(Path(tmp) / 'control.json', dict(session='test', lease=time.monotonic(), mode='fast', roam=True, visible=False, revision=1))
             scene = renderer.Companion(tmp, os.getpid(), 'test', demo=True)
             try:
+                # Same on-screen size as Astra's own Nayu at "Avatar size" 390.
+                self.assertEqual((scene.width(), scene.height()), (166, 166))
                 self.assertFalse(scene.roam)
                 self.assertFalse(scene.grab().isNull())
                 state = json.loads((Path(tmp) / 'renderer-status.json').read_text('utf-8'))

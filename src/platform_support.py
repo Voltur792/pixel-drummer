@@ -1,4 +1,5 @@
 """Platform paths and capabilities without importing desktop or audio APIs."""
+import json
 import os
 from pathlib import Path
 import sys
@@ -13,6 +14,24 @@ def config_directory():
         return home / 'Library' / 'Application Support' / 'com.astra.astra'
     xdg = Path(os.environ.get('XDG_CONFIG_HOME', ''))
     return (xdg if xdg.is_absolute() else home / '.config') / 'astra'
+
+
+NATIVE_SCALE = 4
+DEFAULT_AVATAR_SIZE = 600  # Astra's "Reset avatar size to 600 px"
+
+
+def avatar_scale(settings=None):
+    """On-screen pixels per sprite pixel of Astra's own 2D Nayu.
+
+    Astra 0.2.7 magnifies the 64 px sprite by its integer scale and then by
+    the "Avatar size" slider (settings.json companion.settings.windowSize).
+    """
+    try:
+        path = settings or config_directory() / 'settings.json'
+        size = float(json.loads(path.read_text(encoding='utf-8'))['companion']['settings']['windowSize'])
+    except (OSError, ValueError, KeyError, TypeError):
+        return float(NATIVE_SCALE)
+    return NATIVE_SCALE * min(4.0, max(.25, size / DEFAULT_AVATAR_SIZE))
 
 
 def is_wayland():

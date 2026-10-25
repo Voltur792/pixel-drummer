@@ -234,6 +234,9 @@ native=(ROOT/'assets/native-source/builtin.toml').read_text(encoding='utf-8')
 native=native.replace('[animations]','[animpack]',1)
 native=native.replace('name = "Nayu (2D)"','name = "Nayu stage proxy"\nuid = "user.e1ddc569d2fb8940"')
 native=native.replace('file = "sprites/','file = "builtin:nayu-2d-anims/')
+# 144 s of nothing: Astra throttles a hidden window's timers to about one tick
+# a minute, and the heartbeat must outlast that. A dead plugin still lets the
+# ordinary companion come back on her own once the clip runs out.
 blank_clips=''
 for side in ('a','b'):
     blank_clips+=f'''[[clips]]
@@ -241,7 +244,7 @@ name="stage_blank_{side}"
 file="clips/blank-{side}.png"
 frames=144
 seat=52
-fps=24
+fps=1
 
 '''
 native=native.replace('[states]\n',blank_clips+'[states]\n',1)

@@ -9,7 +9,11 @@ import time
 import uuid
 from .assets import ROOT
 from .ipc import atomic_json as write_json
-from .platform_support import config_directory
+from .platform_support import avatar_scale, config_directory
+
+# A hidden Astra window runs the DOM controller about once a minute, so a
+# short silence is not a vanished page. Stays below the 144 s native blank.
+CONTROLLER_TIMEOUT = 140
 
 
 def data_directory():
@@ -46,7 +50,7 @@ class Runtime:
             folder=config_directory()/'companion'
             settings=json.loads((folder/'settings.json').read_text(encoding='utf-8'))
             window=settings['window'];size=window['size'];x,y=window['pos']
-            native_position=[x+size/2,y+size/2+(52-32)*4]
+            native_position=[x+size/2,y+size/2+(52-32)*avatar_scale()]
             if isinstance(saved.get('position'),list):
                 native_position=saved['position']
             self.control['position']=native_position
@@ -107,7 +111,7 @@ class Runtime:
 
     async def maintain(self):
         while self.process and self.process.poll() is None:
-            if time.monotonic()-self.controller_seen>4.5:
+            if time.monotonic()-self.controller_seen>CONTROLLER_TIMEOUT:
                 # If the DOM vanishes, stop our scene before the native blank
                 # one-shot expires into Astra's full original animation graph.
                 self.configure(stop=True,visible=False)

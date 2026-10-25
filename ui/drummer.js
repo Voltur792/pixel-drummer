@@ -11,7 +11,7 @@
   const previousKey = "pixel-drummer-previous-character";
   const modeKey = "pixel-drummer-mode";
   let timer, busy=false, stopped=false, engaged=false;
-  let hiddenSide=false, lastHidden=0;
+  let hiddenSide=false, lastHidden=0, failures=0;
   const call = (method,params={}) => bridge.callBackend(method,params);
   const report = async payload => {
     try { await call("report",{payload:{visible_panel:false,...payload}}); } catch (_) {}
@@ -102,7 +102,10 @@
     for (let n=0;busy && n<100;n++) await new Promise(r=>setTimeout(r,100));
     try { await restore(); } catch (_) {}
   };
-  await operate(localStorage.getItem(modeKey)||"auto",true);
+  // "restore" lasts one session: a started plugin plays again. A character
+  // the user picked themself is still left alone by the startup check.
+  const saved=localStorage.getItem(modeKey);
+  await operate(!saved||saved==="restore"?"auto":saved,true);
   if (stopped) return;
   timer=setInterval(async () => {
     if (busy || stopped) return;
@@ -119,8 +122,18 @@
           localStorage.setItem(modeKey,"restore");
           localStorage.removeItem(previousKey);
         } else if (!status.renderer?.ready) {
-          await restore();
-          await report({error:"Рендерер перестал отвечать",restored:true});
+          // Bring our scene back in place: switching to the ordinary model
+          // would drop the music and her right-click menu with it.
+          try {
+            const prepared=await call("prepare");
+            if (!prepared.renderer?.ready) throw new Error("Рендерер не готов");
+            const mode=localStorage.getItem(modeKey);
+            await call("configure",{payload:{mode:!mode||mode==="restore"?"auto":mode,visible:true}});
+            await report({restarted:true,reason:"Рендерер перестал отвечать"});
+          } catch (restartError) {
+            await restore();
+            await report({error:"Рендерер перестал отвечать: "+String(restartError),restored:true});
+          }
         } else if (Date.now()-lastHidden>1000) {
           hiddenSide=!hiddenSide;
           const cue=await native.invoke("cue_animation",{mode:"state",value:hiddenSide?"stage_hidden_b":"stage_hidden_a"});
@@ -128,8 +141,12 @@
           lastHidden=Date.now();
         }
       }
+      failures=0;
     } catch (error) {
-      if (engaged) {
+      // One failed poll is not a dead plugin; give it a few seconds before
+      // handing the companion back.
+      if (engaged && ++failures>=5) {
+        failures=0;
         try {
           const library=await native.invoke("list_characters",{});
           if (library.active_id===proxy)

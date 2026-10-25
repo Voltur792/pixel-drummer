@@ -163,14 +163,14 @@ name="stage_blank_a"
 file="clips/blank-a.png"
 frames=144
 seat=52
-fps=24
+fps=1
 
 [[clips]]
 name="stage_blank_b"
 file="clips/blank-b.png"
 frames=144
 seat=52
-fps=24
+fps=1
 
 [states]
 default = "idle"

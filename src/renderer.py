@@ -28,7 +28,7 @@ from .motion import MotionClock, vocal_active, instrument_activity, body_sway, p
 from .concert import ConcertWindow
 from .desktop_play import DesktopPlay
 from .music_effects import draw_effects
-from .platform_support import capabilities, process_alive, recording_source
+from .platform_support import avatar_scale, capabilities, config_directory, process_alive, recording_source
 
 ROOT=Path(__file__).resolve().parents[1]
 ART=ROOT/'src/resources/assets/band'
@@ -112,7 +112,9 @@ class Companion(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self.setWindowTitle('Nayu — Pixel Band')
-        self.resize(256,256)
+        # Screen pixels per sprite pixel: the same size as Astra's own Nayu.
+        self.px=avatar_scale();self.scale_checked=0;self.settings_stamp=None
+        self.resize(round(64*self.px),round(64*self.px))
         self.data,self.parent_pid,self.session=Path(data),parent_pid,session
         self.demo=demo
         self.audio=Loopback()
@@ -231,6 +233,9 @@ class Companion(QWidget):
             if not self.demo and (now-self.lease>12 or not self.parent_alive()):
                 QApplication.quit()
                 return
+        if now-self.scale_checked>1:
+            self.scale_checked=now
+            self.follow_avatar_size()
         self.features=self.audio.snapshot()
         if now-self.started<.5:
             self.features['music']=False
@@ -283,7 +288,8 @@ class Companion(QWidget):
             seq=self.fly if self.walker.airborne else self.walk if moving else self.idle
             self.frame=seq[int(now*(12 if self.walker.airborne else 10 if moving else 8))%len(seq)]
         x,y=self.walker.position
-        self.move(round(x-128),round(y-208))
+        # The walker tracks her feet: sprite column 32, contact row 52.
+        self.move(round(x-32*self.px),round(y-52*self.px))
         screen=next((s.name for s in self.screen_defs if s.contains((x,y))),None)
         if screen and screen!=self.last_screen:
             self.last_screen=screen
@@ -356,12 +362,12 @@ class Companion(QWidget):
     def paintEvent(self,event):
         painter=QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform,False)
-        painter.scale(4,4)
+        painter.scale(self.px,self.px)
         if self.stage.state in ('idle','walk') and self.walker.direction<0:
             painter.translate(64,0);painter.scale(-1,1)
         self.draw_performer(painter,self.frame,self.stage.instrument,self.pose_index,self.stage.state=='play')
         self.desktop.draw(painter)
-        # Only the occupied pixels intercept mouse input, not a 256px square.
+        # Only the occupied pixels intercept mouse input, not the whole square.
         # Region is updated at most once per frame and includes the instruments.
         mirrored=self.stage.state in ('idle','walk') and self.walker.direction<0
         carrying=self.desktop.phase in ('running','carrying')
@@ -377,18 +383,36 @@ class Companion(QWidget):
                     if not opaque and run is not None:
                         a,b=run,x
                         if mirrored:a,b=64-b,64-a
-                        region|=QRegion(QRect(a*4,y*4,(b-a)*4,4));run=None
+                        region|=self.sprite_rect(a,y,b-a,1);run=None
             if self.stage.state=='play':
                 # Allow particles outside opaque sprite pixels to be painted.
-                region|=QRegion(QRect(5*4,20*4,54*4,34*4))
-                region|=QRegion(QRect(19*4,0,28*4,36*4))
-            if carrying:region|=QRegion(QRect(17*4,35*4,31*4,14*4))
+                region|=self.sprite_rect(5,20,54,34)
+                region|=self.sprite_rect(19,0,28,36)
+            if carrying:region|=self.sprite_rect(17,35,31,14)
             self.mask_cache[key]=region
         self.setMask(region)
         if self.effects and self.stage.state=='play':
             draw_effects(painter,self.stage.instrument,self.effect_history,time.monotonic(),
                          accent=instrument_activity(self.stage.instrument,self.features))
         painter.end()
+
+    def sprite_rect(self,x,y,w,h):
+        # Round both edges, so neighbouring rows meet at fractional scales.
+        left,top=round(x*self.px),round(y*self.px)
+        return QRegion(QRect(left,top,round((x+w)*self.px)-left,round((y+h)*self.px)-top))
+
+    def follow_avatar_size(self):
+        # Re-read only when Astra rewrites its settings (the slider moved).
+        try:
+            stamp=(config_directory()/'settings.json').stat().st_mtime_ns
+        except OSError:
+            stamp=None
+        if stamp==self.settings_stamp:return
+        self.settings_stamp=stamp
+        px=avatar_scale()
+        if px!=self.px:
+            self.px=px;self.mask_cache.clear()
+            self.resize(round(64*px),round(64*px))
 
     def mousePressEvent(self,event):
         if event.button()==Qt.MouseButton.LeftButton:
@@ -424,7 +448,7 @@ class Companion(QWidget):
     def mouseMoveEvent(self,event):
         if self.drag_offset is not None:
             pos=event.globalPosition().toPoint()-self.drag_offset
-            self.walker.position=(pos.x()+128,pos.y()+208)
+            self.walker.position=(pos.x()+32*self.px,pos.y()+52*self.px)
 
     def mouseReleaseEvent(self,event):
         self.drag_offset=None

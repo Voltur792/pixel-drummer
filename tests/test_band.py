@@ -114,7 +114,8 @@ class ArtTests(unittest.TestCase):
         for state in states:
             self.assertFalse(state['loop'])
             self.assertIn(dict(on='clip_finished',to='idle'),state['transitions'])
-            self.assertEqual(clips[state['clip']]['frames']/clips[state['clip']]['fps'],6)
+            # Outlasts a hidden window's one-a-minute timer, still ends on its own.
+            self.assertEqual(clips[state['clip']]['frames']/clips[state['clip']]['fps'],144)
         self.assertEqual(graph['states']['default'],'idle')
     def test_authentic_idle_and_walk_are_copied_without_repainting(self):
         native_hashes={'idle':'797c28186438a2aa5de9faa5beeac93b75b6dccb4978dc936f7a37372157471e',
